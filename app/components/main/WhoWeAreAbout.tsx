@@ -22,7 +22,7 @@ function WhoWeAreAbout() {
               We Will Give You Strength and Health
             </h1>
             <p>
-              At Gymate, we are dedicated to helping you achieve the body of
+              At New Moon Gym Plus, we are dedicated to helping you achieve the body of
               your dreams. Our expert trainers and nutritionists will work with
               you to create a personalized fitness and nutrition plan that helps
               you reach your specific goals.
@@ -43,9 +43,9 @@ function WhoWeAreAbout() {
             <Image
               width={1000}
               height={1000}
-              src="/images/whoweare/running-girl.png"
+              src="/images/whoweare/girl.png"
               alt="girl_running"
-              className="absolute w-[34rem] right-[46%] top-[50%] translate-x-1/2 -translate-y-1/2 z-[5]"
+              className="absolute w-[34rem] right-[60%] top-[40%] translate-x-1/2 -translate-y-1/2 z-[5]"
             />
             <Image
               width={250}
@@ -60,13 +60,6 @@ function WhoWeAreAbout() {
               src="/images/whoweare/running-text.png"
               alt="bg-text"
               className="absolute top-[55%] translate-x-1/2 -translate-y-1/2 right-[78%]"
-            />
-            <Image
-              width={80}
-              height={80}
-              src="/images/whoweare/fart.png"
-              alt="bg-wind"
-              className="absolute right-[34%] top-[57.5%] translate-x-1/2 -translate-y-1/2"
             />
           </div>
         </div>

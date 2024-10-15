@@ -22,10 +22,6 @@ export default function RootLayout({
     <TogglerProvider>
       <html lang="en" className="scroll-smooth">
         <head>
-          <script
-            src="https://kit.fontawesome.com/23cc326a28.js"
-            crossOrigin="anonymous"
-          ></script>
         </head>
         <body className={`${montserrat.className}`}>{children}</body>
       </html>

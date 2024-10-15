@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import {FaCopyright} from "react-icons/fa";
+import { FaCopyright, FaFacebookF, FaTwitter, FaPinterestP, FaYoutube } from "react-icons/fa";
 
 
 function Footer() {
   return (
-    <section id="footer">
+    <section id="footer" className="border-t shadow-neutral-900">
       <footer className="bg-white px-8 py-16 lg:py-24 text-center flex flex-col lg:flex-row lg:text-left gap-16 lg:justify-between lg:px-32">
         <div className="space-y-6 lg:w-96">
           <div className="space-y-4">
@@ -30,25 +30,25 @@ function Footer() {
               href="https://www.facebook.com"
               className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
             >
-              <i className="fa-brands fa-facebook-f"></i>
+              <FaFacebookF />
             </Link>
             <Link
               href="https://www.twitter.com"
               className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
             >
-              <i className="fa-brands fa-twitter"></i>
+              <FaTwitter />
             </Link>
             <Link
               href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
               className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
             >
-              <i className="fa-brands fa-pinterest-p"></i>
+              <FaPinterestP />
             </Link>
             <Link
               href="https://www.youtube.com"
               className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
             >
-              <i className="fa-brands fa-youtube"></i>
+              <FaYoutube />
             </Link>
           </div>
         </div>

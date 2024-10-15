@@ -9,7 +9,7 @@ import Hero from "./components/main/Hero";
 import LatestBlog from "./components/main/LatestBlog";
 import MobileNavbar from "./components/main/MobileNavbar";
 import PricingChart from "./components/main/PricingChart";
-import Sponsors from "./components/main/Sponsors";
+// import Sponsors from "./components/main/Sponsors";
 import WhoWeAre from "./components/main/WhoWeAre";
 import WhyChooseUs from "./components/main/WhyChooseUs";
 

@@ -27,7 +27,7 @@ function WhoWeAre() {
             <FaDumbbell className="w-14 h-14 text-[#ff0000] z-10" />
             <h1 className="font-bold text-2xl z-10">WORKOUT</h1>
             <p className="text-[0.95rem] z-10">
-              With a variety of workouts to choose from, you'll have everything you need to get into the best shape of your life.
+              With a variety of workouts to choose from, you will have everything you need to get into the best shape of your life.
             </p>
           </div>
 

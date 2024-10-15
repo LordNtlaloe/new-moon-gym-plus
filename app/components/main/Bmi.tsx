@@ -1,43 +1,43 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 
 function Bmi() {
-  const [weight, setWeight] = useState<number | null>(null);
-  const [height, setHeight] = useState<number | null>(null);
-  const [result, setResult] = useState<{
-    bmi: number | null;
-    status: string;
-  }>({
-    bmi: null,
-    status: "",
-  });
+  // const [weight, setWeight] = useState<number | null>(null);
+  // const [height, setHeight] = useState<number | null>(null);
+  // const [result, setResult] = useState<{
+  //   bmi: number | null;
+  //   status: string;
+  // }>({
+  //   bmi: null,
+  //   status: "",
+  // });
 
-  function getResult() {
-    const result = weight! / ((height! / 100) * (height! / 100));
+  // function getResult() {
+  //   // const result = weight! / ((height! / 100) * (height! / 100));
 
-    let status;
+  //   // let status;
 
-    switch (true) {
-      case result <= 18.4:
-        status = "Underweight";
-        break;
-      case result >= 18.5 && result <= 24.9:
-        status = "Normal";
-        break;
-      case result >= 25 && result <= 39.9:
-        status = "Overweight";
-        break;
-      case result >= 40:
-        status = "Obese";
-        break;
-      default:
-        status = "Invalid Input!";
-        break;
-    }
+  //   // switch (true) {
+  //   //   case result <= 18.4:
+  //   //     status = "Underweight";
+  //   //     break;
+  //   //   case result >= 18.5 && result <= 24.9:
+  //   //     status = "Normal";
+  //   //     break;
+  //   //   case result >= 25 && result <= 39.9:
+  //   //     status = "Overweight";
+  //   //     break;
+  //   //   case result >= 40:
+  //   //     status = "Obese";
+  //   //     break;
+  //   //   default:
+  //   //     status = "Invalid Input!";
+  //   //     break;
+  //   // }
 
-    return { bmi: result, status: status };
-  }
+  //   // return { bmi: result, status: status };
+  // }
 
   return (
 <section id="bmi">
@@ -47,7 +47,7 @@ function Bmi() {
     
     <div className="space-y-6 text-white z-20 relative max-w-screen-xl m-auto">
       <h1 className="font-bold text-4xl">
-        "The journey of a thousand miles begins with a single step."
+      &#34;The journey of a thousand miles begins with a single step.&#34;
       </h1>
       <p>
         Every step you take towards your health is a step worth celebrating.
