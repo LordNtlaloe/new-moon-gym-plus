@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align='center'><img src='https://user-images.githubusercontent.com/105128267/213878516-5072da91-0d7a-4dd8-95a8-0b405691dcc5.svg'/></div>
 
-## Getting Started
+<h2>About the project</h2>
 
-First, run the development server:
+  <p><b>Gymate</b> provide a space for people to improve their physical fitness and overall health through regular exercise and physical activity.</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+👉 Live Demo: <a href='https://darrellrahan-gymate.vercel.app/'>https://darrellrahan-gymate.vercel.app/</a>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<h3>Build with:</h3>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+» Next.js <br>
+» TypeScript <br>
+» Tailwind CSS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<h2>Screenshots of the Project 📸</h2>
+<br>
+<h3 align='center'>Home Page 🏡</h3>
 
-## Learn More
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213878710-5662b56b-fc14-43cc-b038-70c21abb2e5f.png'/>
 
-To learn more about Next.js, take a look at the following resources:
+</div>
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<br><br>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<h3 align='center'>Classes Page 👇</h3>
 
-## Deploy on Vercel
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213878977-d98a7725-d615-48ed-b91d-5ebf7a6b049c.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>Blog Page 👇</h3>
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213879015-82a90c2a-98a7-4add-8f72-d29b9388a27f.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>Schedule Page 👇</h3>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213879131-4bf389d9-57cc-4b5d-9d50-ea62b35862d9.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>Contact Page 👇</h3>
+
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213879186-756e8df8-ca2f-4330-b238-0849c9e6ca33.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>Gallery Page 👇</h3>
+
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213879218-7c49d152-b229-4b9a-8f89-5f3ab7fa8e67.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>Pricing Page 👇</h3>
+
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213879240-a164e827-f8ac-4248-a294-a620f9c530d7.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>Login Page 👇</h3>
+
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213879261-c4f4596c-0836-49b1-baa3-9abad0501486.png'/>
+</div>
+<br>
+<br>
+<h3 align='center'>About Page 👇</h3>
+
+<div align='center'>
+<img src='https://user-images.githubusercontent.com/105128267/213912643-6deef1ff-505d-4d21-8a96-88be2fee242a.png'/>
+</div>
+<br>
+<br>
+# new-moon-gym-plus
