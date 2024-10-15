@@ -11,7 +11,7 @@ function Cta() {
             <span className="text-[#ff0000]">Click Here:</span>
             <Link
               href="/"
-              className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-6 py-4 after:h-[3.5rem] after:absolute after:w-[13.25rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-6 w-fit"
+              className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-6 py-4 after:h-[1.5rem] after:absolute after:w-[13.25rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-6 w-fit"
             >
               <span>PURCHASE NOW</span>
               <span>
