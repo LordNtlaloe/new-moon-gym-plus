@@ -7,15 +7,28 @@ import Swal from "sweetalert2";
 import { createWaitingList } from "@/app/_actions/bookings.actions";
 import { sendMail } from "@/app/_email/mail";
 
+// Define the shape of form data
+interface FormDataShape {
+  full_names: string;
+  email: string;
+  phone_number: string;
+}
+
+// Define the shape of errors
+interface ErrorsShape {
+  full_names: string;
+  email: string;
+  phone_number: string;
+}
 
 const WaitingListForm = () => {
   const router = useRouter(); // Initialize the router
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataShape>({
     full_names: "",
     email: "",
     phone_number: "",
   });
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<ErrorsShape>({
     full_names: "",
     email: "",
     phone_number: "",
@@ -25,7 +38,8 @@ const WaitingListForm = () => {
     event.preventDefault(); // Prevent the default form submission behavior
     const formDataObj = new FormData(event.currentTarget); // Create FormData from the form
     const email = formDataObj.get("email") as string;
-    const full_names = formDataObj.get("full_namess") as string
+    const full_names = formDataObj.get("full_names") as string; // Corrected the key here
+
     try {
       if (validateInputs(formDataObj)) {
         const response = await createWaitingList(formDataObj);
@@ -38,7 +52,7 @@ const WaitingListForm = () => {
               name: full_names,
               subject: "Waiting List Confirmation",
               body: `<h1>Thank you for signing up, ${full_names}!</h1><p>You will be contacted once your request is approved.</p>`,
-            })
+            });
             Swal.fire(
               "Thank You!",
               "Thank you for signing up for our waiting list. You will be contacted once your request is approved.",
@@ -53,12 +67,11 @@ const WaitingListForm = () => {
           }
         }
       }
-    } catch (error: any) {
-      console.error("Error submitting form:", error.message);
+    } catch (error) {
+      console.error("Error submitting form:", (error as Error).message);
       Swal.fire("Error!", "There was an issue submitting your form", "error");
     }
   };
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -70,7 +83,7 @@ const WaitingListForm = () => {
 
   const validateInputs = (formData: FormData) => {
     let isValid = true;
-    const newErrors = { full_names: "", email: "", phone_number: "" };
+    const newErrors: ErrorsShape = { full_names: "", email: "", phone_number: "" };
 
     const fullNames = formData.get("full_names");
     const email = formData.get("email");
@@ -98,7 +111,7 @@ const WaitingListForm = () => {
 
   return (
     <section id="form">
-      <form onSubmit={handleSubmit}> {/* Use onSubmit instead of action */}
+      <form onSubmit={handleSubmit}>
         <div className="max-w-xl my-16 mx-8 lg:mx-auto p-8 lg:px-12 lg:py-16 bg-black text-white space-y-10">
           <div className="space-y-6">
             <div className="flex flex-col gap-3">

@@ -9,10 +9,18 @@ import { createConsultationBooking } from "@/app/_actions/bookings.actions";
 import { FaCalendarAlt } from "react-icons/fa";
 import { sendMail } from "@/app/_email/mail";
 
+// Define the shape of form data
+interface FormDataShape {
+  full_names: string;
+  email: string;
+  phone_number: string;
+  date: string;
+  time: string;
+}
 
 const BookingConsultationForm = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataShape>({
     full_names: "",
     email: "",
     phone_number: "",
@@ -33,7 +41,7 @@ const BookingConsultationForm = () => {
 
     const formDataObj = new FormData(event.currentTarget);
     const email = formDataObj.get("email") as string;
-    const full_names = formDataObj.get("full_namess") as string
+    const full_names = formDataObj.get("full_names") as string; // Corrected here
 
     try {
       if (validateInputs(formDataObj)) {
@@ -47,7 +55,7 @@ const BookingConsultationForm = () => {
               name: full_names,
               subject: "Waiting List Confirmation",
               body: `<h1>Thank you for signing up, ${full_names}!</h1><p>You will be contacted once your request is approved.</p>`,
-            })
+            });
             Swal.fire(
               "Thank You!",
               "Your consultation request has been received. We will contact you soon.",
@@ -64,12 +72,11 @@ const BookingConsultationForm = () => {
           }
         }
       }
-    } catch (error: any) {
-      console.error("Error submitting form:", error.message);
+    } catch (error) {
+      console.error("Error submitting form:", (error as Error).message);
       Swal.fire("Error!", "There was an issue submitting your form", "error");
     }
   };
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -119,7 +126,7 @@ const BookingConsultationForm = () => {
     }
 
     if (!time) {
-      newErrors.time = "Time is required."; // Ensure time is validated
+      newErrors.time = "Time is required.";
       isValid = false;
     }
 
