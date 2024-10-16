@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTogglerContext } from "../../context/toggler";
+import { useTogglerContext } from "../../app/context/toggler";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 

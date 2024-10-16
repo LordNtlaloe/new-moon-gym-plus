@@ -44,17 +44,8 @@ function Form({ register }: { register?: boolean }) {
         </div>
         <div>
           <button className="bg-[#ff0000] p-2 text-center text-xl w-full">
-            {register ? "Register" : "Login"}
+            Sign Up For Waiting List
           </button>
-        </div>
-        <div className="flex flex-col gap-3 items-center">
-          <p>{register ? "Already have an account?" : "New to Gymate?"}</p>
-          <Link
-            href={register ? "/login" : "/register"}
-            className="text-[#ff0000] font-bold"
-          >
-            {register ? "Login" : "Register"}
-          </Link>
         </div>
       </div>
     </section>

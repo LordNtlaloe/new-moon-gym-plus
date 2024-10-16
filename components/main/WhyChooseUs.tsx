@@ -18,7 +18,7 @@ function WhyChooseUs() {
           href="/"
           className="relative flex items-center gap-2 bg-white text-black font-bold px-8 py-4 after:h-[3.5rem] after:absolute after:w-[13rem] after:duration-300 after:ease-linear after:border after:border-[hsla(0,0%,100%,.362)] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0"
         >
-          <span>JOIN WITH US</span>
+          <span>Work With Us</span>
           <span className="text-[#ff0000]">
             <i className="fa-solid fa-arrow-right undefined"></i>
           </span>

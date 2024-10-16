@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { FaCheckCircle } from "react-icons/fa";
-import { FaTimesCircle } from "react-icons/fa"
+import { FaTimesCircle } from "react-icons/fa";
 
 function PricingChart() {
   return (
@@ -12,14 +12,14 @@ function PricingChart() {
           src="/images/pricing-chart/nodaysoff.png"
           alt="no days off"
           width={270}
-          height={270}
+          height={200}
           className="absolute left-0"
         />
         <Image
           src="/images/pricing-chart/twobarbels.png"
           alt="dunno"
           width={300}
-          height={300}
+          height={200}
           className="absolute bottom-0 right-0"
         />
         <div className="relative flex flex-col gap-4 items-center text-center">
@@ -27,30 +27,27 @@ function PricingChart() {
             src="/images/abstract/abstract.svg"
             alt="abstract"
             width={220}
-            height={220}
+            height={150}
             className="absolute left-[2.95rem] lg:left-[32.75rem] -top-1.5"
           />
           <p className="text-white relative z-10 font-bold text-center mb-4">
             PRICING PLAN
           </p>
           <h1 className="font-bold text-4xl">Exclusive Pricing Plan</h1>
-          <p>
-            New Moon Gym Plus Affordable Prices
-          </p>
+          <p>New Moon Gym Plus Affordable Prices</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-4 max-w-screen-xl m-auto lg:px-16 gap-6 z-10 relative">
           {/* Pricing Plan 1 */}
           <div className="flex flex-col group">
             <div className="relative">
               <Image
-                src="/images/pricing-chart/beginners.jpg"
+                src="/images/hero/IMG_2339.jpg"
                 alt="beginners"
                 width={500}
-                height={500}
+                height={400}
                 className="grayscale group-hover:grayscale-0 duration-300 ease-linear w-full"
               />
               <div className="absolute inset-0 bg-red-600 opacity-100 transition-opacity duration-300 ease-linear group-hover:opacity-50"></div>
-
               <div className="bg-white font-bold text-xl py-4 text-center absolute -bottom-5 left-12 right-12 group-hover:text-[#ff0000] duration-300 ease-linear">
                 Ha Pita Branch
               </div>
@@ -70,7 +67,7 @@ function PricingChart() {
               </ul>
               <Link
                 href="/"
-                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-8 py-4 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6"
+                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-4 py-2 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6 focus:outline-none"
               >
                 <span>PURCHASE NOW</span>
                 <span>
@@ -83,14 +80,13 @@ function PricingChart() {
           <div className="flex flex-col group">
             <div className="relative">
               <Image
-                src="/images/pricing-chart/basic.jpg"
+                src="/images/hero/IMG_2342.jpg"
                 alt="basic"
                 width={500}
-                height={500}
+                height={400}
                 className="grayscale group-hover:grayscale-0 duration-300 ease-linear w-full"
               />
               <div className="absolute inset-0 bg-green-700 opacity-100 transition-opacity duration-300 ease-linear group-hover:opacity-50"></div>
-
               <div className="bg-white font-bold text-xl py-4 text-center absolute -bottom-5 left-10 right-10 group-hover:text-[#ff0000] duration-300 ease-linear">
                 Weightloss Therapy
               </div>
@@ -110,7 +106,7 @@ function PricingChart() {
               </ul>
               <Link
                 href="/"
-                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-8 py-4 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6"
+                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-4 py-2 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6 focus:outline-none"
               >
                 <span>PURCHASE NOW</span>
                 <span>
@@ -123,14 +119,13 @@ function PricingChart() {
           <div className="flex flex-col group">
             <div className="relative">
               <Image
-                src="/images/pricing-chart/advance.jpg"
+                src="/images/hero/IMG_2372.jpg"
                 alt="advance"
                 width={500}
-                height={500}
+                height={400}
                 className="grayscale group-hover:grayscale-0 duration-300 ease-linear w-full"
               />
               <div className="absolute inset-0 bg-blue-800 opacity-100 transition-opacity duration-300 ease-linear group-hover:opacity-50"></div>
-
               <div className="bg-white font-bold text-xl py-4 text-center absolute -bottom-5 left-12 right-12 group-hover:text-[#ff0000] duration-300 ease-linear">
                 Hi-Fi City Branch
               </div>
@@ -147,10 +142,11 @@ function PricingChart() {
                 <li className="flex items-center"><FaCheckCircle className="text-[#00FF00] mr-2" /> Progressive Training Schedule</li>
                 <li className="flex items-center"><FaCheckCircle className="text-[#00FF00] mr-2" /> Results Guaranteed</li>
                 <li className="flex items-center"><FaCheckCircle className="text-[#00FF00] mr-2" /> Showers</li>
+                <li className="flex items-center"><FaCheckCircle className="text-[#00FF00] mr-2" /> Meal Plan</li>
               </ul>
               <Link
                 href="/"
-                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-8 py-4 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6"
+                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-4 py-2 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6 focus:outline-none"
               >
                 <span>PURCHASE NOW</span>
                 <span>
@@ -163,14 +159,13 @@ function PricingChart() {
           <div className="flex flex-col group">
             <div className="relative">
               <Image
-                src="/images/pricing-chart/advance.jpg" // Use an appropriate image for students
+                src="/images/hero/IMG_2319.jpg"
                 alt="students"
                 width={500}
-                height={500}
+                height={400}
                 className="grayscale group-hover:grayscale-0 duration-300 ease-linear w-full"
               />
               <div className="absolute inset-0 bg-purple-800 opacity-100 transition-opacity duration-300 ease-linear group-hover:opacity-50"></div>
-
               <div className="bg-white font-bold text-xl py-4 text-center absolute -bottom-5 left-12 right-12 group-hover:text-[#ff0000] duration-300 ease-linear">
                 Student Plan
               </div>
@@ -190,7 +185,7 @@ function PricingChart() {
               </ul>
               <Link
                 href="/"
-                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-8 py-4 after:h-[3.5rem] after:absolute after:w-[14rem] after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6"
+                className="relative text-white flex items-center gap-2 bg-[#ff0000] font-bold px-4 py-2 after:duration-300 after:ease-linear after:border after:border-[#ff0000] after:-top-3 after:-right-3 hover:after:top-0 hover:after:right-0 mt-4 lg:mt-6 focus:outline-none"
               >
                 <span>PURCHASE NOW</span>
                 <span>
