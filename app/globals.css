@@ -91,3 +91,15 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+@media (max-width: 640px) {
+  /* Adjust icon size */
+  .calendar-icon {
+    font-size: 20px; /* Adjust as necessary */
+  }
+
+  /* Ensure input field is wide enough */
+  input[name="date"] {
+    width: calc(100% - 50px); /* Adjust for icon */
+  }
+}

@@ -205,12 +205,13 @@ const BookingConsultationForm = () => {
                 <button
                   type="button"
                   onClick={() => setShowCalendar(!showCalendar)}
-                  className="absolute right-2 top-2"
+                  className="absolute right-2 top-2 flex items-center"
+                  aria-label="Open calendar"
                 >
-                  <FaCalendarAlt />
+                  <FaCalendarAlt size={20} />
                 </button>
                 {showCalendar && (
-                  <div className="absolute z-10 bg-white shadow-lg text-black">
+                  <div className="absolute z-10 bg-white shadow-lg text-black mt-1">
                     <Calendar
                       selected={formData.date ? new Date(formData.date) : undefined}
                       onDayClick={handleDateChange}
@@ -220,6 +221,7 @@ const BookingConsultationForm = () => {
               </div>
               {errors.date && <p className="text-red-500">{errors.date}</p>}
             </div>
+
 
             <div className="flex flex-col gap-3">
               <label htmlFor="time" className="font-semibold text-xl">
