@@ -123,7 +123,7 @@ function MobileNavbar() {
                 usePathname() === "/classes" ? "text-[#ff0000]" : ""
               } duration-300 ease-linear`}
             >
-              Classes
+              Sessions
             </Link>
           </li>
         </ul>
