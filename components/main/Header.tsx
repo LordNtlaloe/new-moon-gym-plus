@@ -64,7 +64,7 @@ function Header() {
           >
             Schedule
           </Link>
-          <Link
+          {/* <Link
             href="/gallery"
             className={`hover:text-[#ff0000] ${usePathname() === "/gallery" ? "text-[#ff0000]" : ""
               } duration-300 ease-linear`}
@@ -77,7 +77,7 @@ function Header() {
               } duration-300 ease-linear`}
           >
             Blog
-          </Link>
+          </Link> */}
           <Link
             href="/contact"
             className={`hover:text-[#ff0000] ${usePathname() === "/contact" ? "text-[#ff0000]" : ""

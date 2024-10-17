@@ -62,7 +62,7 @@ function MobileNavbar() {
             </Link>
           </li>
           <li>
-            <Link
+            {/* <Link
               href="/gallery"
               onClick={() => {
                 setMobileNavbar(false);
@@ -85,7 +85,7 @@ function MobileNavbar() {
               } duration-300 ease-linear`}
             >
               Blog
-            </Link>
+            </Link> */}
           </li>
           <li>
             <Link

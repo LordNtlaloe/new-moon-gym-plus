@@ -63,7 +63,7 @@ function WhoWeAreAbout() {
             />
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 max-w-screen-xl m-auto">
+        {/* <div className="grid grid-cols-1 lg:grid-cols-2 max-w-screen-xl m-auto">
           <div className="bg-white px-8 py-12 flex flex-col lg:justify-center items-center text-center gap-4">
             <Image
               src="/images/whoweare-about/grid-1.png"
@@ -106,7 +106,7 @@ function WhoWeAreAbout() {
               Exercitation veniam consequat.
             </p>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

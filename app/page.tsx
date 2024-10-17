@@ -6,7 +6,7 @@ import Footer from "../components/main/Footer";
 import GymTrainers from "../components/main/GymTrainers";
 import Header from "../components/main/Header";
 import Hero from "../components/main/Hero";
-import LatestBlog from "../components/main/LatestBlog";
+// import LatestBlog from "../components/main/LatestBlog";
 import MobileNavbar from "../components/main/MobileNavbar";
 import PricingChart from "../components/main/PricingChart";
 // import Sponsors from "./components/main/Sponsors";
@@ -27,7 +27,7 @@ export default function Home() {
       {/* <Sponsors /> */}
       <Bmi />
       <PricingChart />
-      <LatestBlog />
+      {/* <LatestBlog /> */}
       <Cta />
       <Footer />
     </main>

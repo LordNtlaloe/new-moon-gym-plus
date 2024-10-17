@@ -18,7 +18,7 @@ function Contact() {
             </p>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div className="flex flex-col relative space-y-6">
-                <h3 className="text-xl font-bold">New York City, USA</h3>
+                <h3 className="text-xl font-bold">Maseru, Lesotho</h3>
                 <span className="bg-[#ff0000] w-[3.25rem] h-1 absolute top-2"></span>
                 <p>
                   Ha Pita, Pela Mapoleseng
@@ -52,25 +52,25 @@ function Contact() {
                 <div className="flex items-center gap-4 lg:gap-3">
                   <Link
                     href="https://www.facebook.com"
-                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#ff0366] hover:text-white duration-300 ease-linear"
+                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
                   >
                     <i className="fa-brands fa-facebook-f"></i>
                   </Link>
                   <Link
                     href="https://www.twitter.com"
-                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#ff0366] hover:text-white duration-300 ease-linear"
+                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
                   >
                     <i className="fa-brands fa-twitter"></i>
                   </Link>
                   <Link
                     href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#ff0366] hover:text-white duration-300 ease-linear"
+                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
                   >
                     <i className="fa-brands fa-pinterest-p"></i>
                   </Link>
                   <Link
                     href="https://www.youtube.com"
-                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#ff0366] hover:text-white duration-300 ease-linear"
+                    className="bg-[#efefef] w-12 h-12 text-lg flex items-center justify-center rounded-full hover:bg-[#FF0000] hover:text-white duration-300 ease-linear"
                   >
                     <i className="fa-brands fa-youtube"></i>
                   </Link>
@@ -93,16 +93,10 @@ function Contact() {
                 type="email"
               />
               <select className="w-full py-3 px-5 h-[3.125rem] text-[#a1a1a1] text-[0.875rem] border border-[#e4e4e4]">
-                <option>Select Class</option>
-                <option>Body Building</option>
-                <option>Boxing</option>
-                <option>Running</option>
-                <option>Fitness</option>
-                <option>Yoga</option>
-                <option>Workout</option>
-                <option>Kata</option>
-                <option>Meditation</option>
-                <option>Cycling</option>
+                <option>Select</option>
+                <option>Book A Consultation</option>
+                <option>Sign Up For Waiting List</option>
+                <option>Ask A Quesion</option>
               </select>
               <textarea
                 placeholder="Comment"
