@@ -1,7 +1,8 @@
 import { TogglerProvider } from "./context/toggler";
 import "./globals.css";
 import { Lato } from "next/font/google";
-import { ClerkProvider} from '@clerk/nextjs';
+import { ClerkProvider } from '@clerk/nextjs';
+import VideoClientProvider from "./VideoClientProvider";
 
 const montserrat = Lato({
   weight: ["100", "300", "400", "700", "900"],
@@ -23,7 +24,9 @@ export default function RootLayout({
     <ClerkProvider>
       <TogglerProvider>
         <html lang="en" className="scroll-smooth">
-          <body className={`${montserrat.className}`}>{children}</body>
+          <VideoClientProvider>
+            <body className={`${montserrat.className}`}>{children}</body>
+          </VideoClientProvider>
         </html>
       </TogglerProvider>
     </ClerkProvider>
