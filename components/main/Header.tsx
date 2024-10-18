@@ -17,7 +17,7 @@ function Header() {
   useEffect(() => {
     const onPageScroll = () => {
       headerRef.current!.style.backgroundColor =
-        window.pageYOffset > 20 ? "black" : "transparent";
+        window.pageYOffset > 20 ? "black" : "black";
     };
     window.addEventListener("scroll", onPageScroll);
 
