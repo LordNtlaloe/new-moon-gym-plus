@@ -1,9 +1,23 @@
 import { useUser } from "@clerk/nextjs";
-import { CallRecording } from "@stream-io/node-sdk";
-import { Call } from "@stream-io/video-react-sdk";
-import { useState } from "react";
+import { Call, CallRecording } from "@stream-io/video-react-sdk";
+import { useEffect, useState } from "react";
 
-export default function useLoadRecordings(call: Call){
-    const {user} = useUser();
+export default function useLoadRecordings(call: Call) {
+    const { user } = useUser();
     const [recordings, setRecordings] = useState<CallRecording[]>([])
+    const [recordingsLoading, setRecordingsLoading] = useState(true)
+
+    useEffect(() => {
+
+        async function loadRecordings() {
+            setRecordingsLoading(true);
+            if (!user) return;
+            const {recordings} = await call.queryRecordings();
+            setRecordings(recordings);
+            setRecordingsLoading(false)
+        }
+
+    }, [call, user?.id])
+
+    return {recordings, recordingsLoading}
 }

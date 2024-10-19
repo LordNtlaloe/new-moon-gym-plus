@@ -4,6 +4,7 @@ import Button from "@/app/components/main/SessionButton"
 import AudioVolumeIndicator from "@/components/general/AudioVolumeIndicator"
 import FlexibleCallLayout from "@/components/general/FlexibleCallLayout"
 import PermissionsPrompt from "@/components/general/PermissionsPrompt"
+import RecordingsList from "@/components/general/RecordingsList"
 import useLoadCall from "@/hooks/useLoadCall"
 import useStreamCall from "@/hooks/useStreamCall"
 import { useUser } from "@clerk/nextjs"
@@ -104,6 +105,10 @@ function SessionHasEnded() {
                 Session Has Ended
             </p>
             <Link href="/" className="flex items-center justify-center gap-2 bg-[#FF0000] text-white px-3 py-2 font-semibold transition-colors hover:bg-red-600 active:bg-red-600 disabled:bg-gray-200">Back To Home Screen</Link>
+            <div className="space-y-3">
+                <h2 className="text-center text-xl font-bold">Recordings</h2>
+                <RecordingsList />
+            </div>
         </div>
     )
 }
