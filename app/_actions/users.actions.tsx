@@ -107,7 +107,57 @@ export const getUserByEmail = async (email: string) => {
 
 };
 
-//=============================================================================
+export const getUserById = async (_id: string) => {
+    if (!dbConnection) await init();
+
+    try {
+
+        const collection = await database?.collection("users");
+
+        if (!database || !collection) {
+            console.log("Failed to connect to collection...");
+            return;
+        }
+
+        let user = await collection
+            .findOne({ "_id": _id })
+
+        if (user) {
+            user = { ...user, _id: user._id.toString() }
+        }
+
+    } catch (error: any) {
+        console.log("An error occured...", error.message);
+        return { "error": error.message };
+    }
+
+};
+
+
+export const getUserIds = async (emailAddress: string[]) => {
+    if (!dbConnection) await init();
+
+    try {
+
+        const collection = await database?.collection("users");
+
+        if (!database || !collection) {
+            console.log("Failed to connect to collection...");
+            return;
+        }
+
+        const response = await clerkClient.users.getUserList({
+            emailAddress: emailAddress,
+        });
+
+        return response.data.map((user: { id: any; }) => user.id)
+
+    } catch (error: any) {
+        console.log("An error occured...", error.message);
+        return { "error": error.message };
+    }
+}
+
 
 export const getAllUsers = async () => {
     if (!dbConnection) await init();
