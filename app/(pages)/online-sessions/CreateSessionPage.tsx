@@ -152,7 +152,7 @@ interface SessionLinkProps{
 }
 
 function SessonLink({call}: SessionLinkProps){
-    const sessionLink = `${process.env.NEXT_PUBLIC_BASE_URL}/session/${call.id}`;
+    const sessionLink = `${process.env.NEXT_PUBLIC_BASE_URL}/online-sessions/${call.id}`;
 
     return(
         <div className="text-center font-medium text-[#FF0000]">
