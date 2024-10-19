@@ -11,15 +11,12 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-
-        <VideoClientProvider>
-            <Header />
-            <MobileNavbar />
+        <div className="">
             <body className="">
                 {children}
             </body>
-            <Footer />
-        </VideoClientProvider>
+        </div>
+
     )
 
 }

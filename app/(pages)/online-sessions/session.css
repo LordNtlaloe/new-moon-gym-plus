@@ -1,15 +1,14 @@
+.str-video__participant-details {
+    color: white;
+    /* background-color: #ff0000; */
+}
 
-.str-video__participant-details{
+.str-video__menu-container {
     color: white;
-    background-color: #ff0000;
-  }
-  
-  .str-video__menu-container{
+    /* background-color: #ff0000; */
+}
+
+.str-video__notification {
     color: white;
-    background-color: #ff0000;
-  }
-  
-  .str-video__notification{
-    color: white;
-    background-color: #ff0000;
-  }
+    /* background-color: #ff0000; */
+}
