@@ -2,11 +2,12 @@
 
 import Button from "@/app/components/main/SessionButton"
 import AudioVolumeIndicator from "@/components/general/AudioVolumeIndicator"
+import FlexibleCallLayout from "@/components/general/FlexibleCallLayout"
 import PermissionsPrompt from "@/components/general/PermissionsPrompt"
 import useLoadCall from "@/hooks/useLoadCall"
 import useStreamCall from "@/hooks/useStreamCall"
 import { useUser } from "@clerk/nextjs"
-import { Call, CallControls, DeviceSettings, SpeakerLayout, StreamCall, StreamTheme, useCallStateHooks, useStreamVideoClient, VideoPreview } from "@stream-io/video-react-sdk"
+import { Call, CallControls, CallingState, DeviceSettings, SpeakerLayout, StreamCall, StreamTheme, useCallStateHooks, useStreamVideoClient, VideoPreview } from "@stream-io/video-react-sdk"
 import { Loader2, Speaker } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -85,7 +86,8 @@ function SessionScreen() {
                 </p>
             )}
             {setupComplete ? (
-                <SpeakerLayout />
+                <CallUI />
+
             ):
             (
                 <SetupUI onSetUpComplete={handleSetupComplete}/>
@@ -147,6 +149,19 @@ function SetupUI({onSetUpComplete}: SetupUIProps){
             </label>
             <Button onClick={onSetUpComplete}>Join Session</Button>
         </div>
+    )
+}
+
+function CallUI(){
+    const {useCallCallingState} = useCallStateHooks();
+    const callingState = useCallCallingState();
+
+    if(callingState !== CallingState.JOINED){
+        return <Loader2 className="font-medium text-2xl animate-spin"/>
+    }
+
+    return(
+        <FlexibleCallLayout />
     )
 }
 
