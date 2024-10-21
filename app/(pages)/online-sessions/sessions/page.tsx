@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function page() {
   return (
-    <div>
+    <div className='py-20 my-20'>
         <TrainerSessions />
     </div>
   )

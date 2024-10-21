@@ -21,11 +21,14 @@ export default async function page({ params: { id }, searchParams: {guest}}: Pag
   const guestMode = guest === "true";
   if(!user && !guestMode){
     return(
-      <SessionLoginPage />
+      <div className="my-20 py-20">
+        <SessionLoginPage />
+      </div>
+      
     )
   }
   return (
-    <div className='my-40'>
+    <div className='my-40 py-20'>
       <SessionPage id={id} />
     </div>
   )
