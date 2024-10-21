@@ -6,7 +6,7 @@ import React from 'react'
 
 export default function SessionLoginPage() {
     return (
-        <div className='mx-auto w-fit space-y-3 my-24'>
+        <div className='mx-auto w-fit space-y-3 my-24 flex flex-row'>
             <h1 className="text-center text-2xl font-bold">Join Session</h1>
             <ClerkLoaded>
                 <SignInButton>
