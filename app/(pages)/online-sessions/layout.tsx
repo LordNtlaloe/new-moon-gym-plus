@@ -1,7 +1,5 @@
-import AboutSidebar from "@/components/main/AboutSidebar";
-import Footer from "@/components/main/Footer";
-import Header from "@/components/main/Header";
-import MobileNavbar from "@/components/main/MobileNavbar";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
+import "./session.css"
 
 export default function RootLayout({
     children,
@@ -10,14 +8,11 @@ export default function RootLayout({
 }) {
     return (
         <div className="">
-            <Header />
-            <MobileNavbar />
-            <AboutSidebar />
-            <main>{children}</main>
-            <Footer />
+            <body className="">
+                {children}
+            </body>
         </div>
 
+    )
 
-
-    );
 }
