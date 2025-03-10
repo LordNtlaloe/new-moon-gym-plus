@@ -1,4 +1,3 @@
-import Banner from '@/components/main/Banner';
 import { Metadata } from 'next';
 import React from 'react'
 import SessionPage from './SessionPage';
@@ -22,7 +21,6 @@ export default async function page({ params: { id }, searchParams: {guest}}: Pag
   if(!user && !guestMode){
     return(
       <div className="my-20 py-20">
-        <Banner page={''} />
         <SessionLoginPage />
       </div>
       
@@ -30,7 +28,6 @@ export default async function page({ params: { id }, searchParams: {guest}}: Pag
   }
   return (
     <div className='my-40 py-20'>
-      <Banner page={''} />
       <SessionPage id={id} />
     </div>
   )
