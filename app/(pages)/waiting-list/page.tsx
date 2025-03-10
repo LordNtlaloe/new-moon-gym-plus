@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
-import { createWaitingList } from "@/app/_actions/bookings.actions";
+import { createWaitingList } from "@/app/_actions/waitinglist.actions";
 import { sendMail } from "@/app/_email/mail";
 
 // Define the shape of form data

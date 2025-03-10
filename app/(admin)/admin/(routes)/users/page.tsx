@@ -1,4 +1,4 @@
-import { getAllUsers } from '@/app/_actions/_userActions'
+import { getAllUsers } from '@/app/_actions/users.actions'
 import { UsersTable } from '@/components/auth/usersTable/UsersDataTable'
 import { usersTableColumns } from '@/components/auth/usersTable/UsersTableColums'
 import React from 'react'

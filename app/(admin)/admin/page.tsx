@@ -1,11 +1,11 @@
 // app/dashboard/page.tsx
 "use server";
 import { redirect } from "next/navigation";
-import { getUserByRole } from "@/app/_actions/_userActions"; // Update this path as needed
-import StatsContainer from "@/components/dashboard/overview/StatsContainer"; // Import StatsContainer
-import SalesOverviewChart from "@/components/dashboard/overview/SalesOverviewChart";
-import CategoryDistributionChart from "@/components/dashboard/overview/CategoryDistributionChart";
-import SalesChannelChart from "@/components/dashboard/overview/SalesChannelChart";
+import { getUserByRole } from "@/app/_actions/users.actions"; // Update this path as needed
+// import StatsContainer from "@/components/dashboard/overview/StatsContainer"; // Import StatsContainer
+// import SalesOverviewChart from "@/components/dashboard/overview/SalesOverviewChart";
+// import CategoryDistributionChart from "@/components/dashboard/overview/CategoryDistributionChart";
+// import SalesChannelChart from "@/components/dashboard/overview/SalesChannelChart";
 
 const DashboardPage = async () => {
   try {
@@ -21,13 +21,13 @@ const DashboardPage = async () => {
         <div className='flex-1 overflow-auto relative z-10'>
           <main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
             {/* Use the StatsContainer for the stats */}
-            <StatsContainer />
+            {/* <StatsContainer /> */}
             
             {/* CHARTS */}
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-              <SalesOverviewChart />
+              {/* <SalesOverviewChart />
               <CategoryDistributionChart />
-              <SalesChannelChart />
+              <SalesChannelChart /> */}
             </div>
           </main>
         </div>

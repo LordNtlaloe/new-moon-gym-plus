@@ -107,6 +107,33 @@ export const getUserByEmail = async (email: string) => {
 
 };
 
+export const getUserByRole = async (role: string) => {
+    if (!dbConnection) await init();
+
+    try {
+
+        const collection = await database?.collection("users");
+
+        if (!database || !collection) {
+            console.log("Failed to connect to collection...");
+            return;
+        }
+
+        let user = await collection
+            .findOne({ "role": role })
+
+        if (user) {
+            user = { ...user, _id: user._id.toString() }
+        }
+
+    } catch (error: any) {
+        console.log("An error occured...", error.message);
+        return { "error": error.message };
+    }
+
+};
+
+
 export const getUserById = async (_id: string) => {
     if (!dbConnection) await init();
 
@@ -260,7 +287,7 @@ export const deleteUser = async (_clerkId: string) => {
     }
 }
 
-export const uppdateUserRole = async (_clerkId: string, _newRole: string) => {
+export const updateUserRole = async (_clerkId: string, _newRole: string) => {
 
 
     try {
@@ -296,6 +323,35 @@ export const getUsersCount = async () => {
         return { count };
     } catch (error: any) {
         console.log("An error occurred getting users count...", error.message);
+        return { error: error.message };
+    }
+};
+
+export const updateUserProfilePicture = async (userId: string, newProfilePictureUrl: string) => {
+    try {
+        // Step 1: Update in Clerk
+        const clerkUpdateResponse = await clerkClient.users.updateUser(userId, {
+            publicMetadata: { profilePicture: newProfilePictureUrl },
+        });
+
+        // Step 2: Update in MongoDB
+        if (!dbConnection) await init();
+
+        const collection = await database?.collection("users");
+
+        if (!database || !collection) {
+            console.log("Failed to connect to collection..");
+            return { error: "Failed to connect to MongoDB collection." };
+        }
+
+        const result = await collection.updateOne(
+            { clerkId: userId },
+            { $set: { profilePicture: newProfilePictureUrl } }
+        );
+
+        return { message: "Profile picture updated successfully", clerkResponse: clerkUpdateResponse, dbUpdateResult: result };
+    } catch (error: any) {
+        console.log("An error occurred updating profile picture...", error.message);
         return { error: error.message };
     }
 };

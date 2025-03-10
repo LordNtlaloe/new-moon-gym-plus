@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar"; // Replace with your actual calendar component
 import Swal from "sweetalert2";
-import { createConsultationBooking } from "@/app/_actions/bookings.actions";
+import { createConsultationBooking } from "@/app/_actions/consultation.actions";
 import { FaCalendarAlt } from "react-icons/fa";
 import { sendMail } from "@/app/_email/mail";
 

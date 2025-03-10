@@ -13,7 +13,7 @@ export default function RootLayout({
             <Header />
             <MobileNavbar />
             <AboutSidebar />
-            <body>{children}</body>
+            <main>{children}</main>
             <Footer />
         </div>
 

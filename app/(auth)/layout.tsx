@@ -8,13 +8,13 @@ export default function RootLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="max-w-[1920px]:">
+        <body className="max-w-[1920px]:">
             <Header />
             <MobileNavbar />
-            <body className="flex flex-col justify-center items-center">
+            <main className="flex flex-col justify-center items-center">
                 {children}
-            </body>
+            </main>
             <Footer />
-        </div>
+        </body>
     );
 }
