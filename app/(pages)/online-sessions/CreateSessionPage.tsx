@@ -3,18 +3,59 @@
 import { useUser } from "@clerk/nextjs"
 import { Call, MemberRequest, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { Copy, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getUserIds } from "@/app/_actions/users.actions";
 import Button from "@/app/components/main/SessionButton";
 import Link from "next/link";
+import { getUserByRole } from "@/app/_actions/users.actions";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CreateSessionPage() {
     const [descriptionInput, setDescriptionInput] = useState("");
     const [startTimeInput, setStartTimeInput] = useState("");
     const [participantsInputs, setParticipantsInput] = useState("");
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [call, setCall] = useState<Call>()
     const client = useStreamVideoClient();
+
     const { user } = useUser();
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (user?.id) {
+                const result = await getUserByRole(user.id);
+
+                if (result.error) {
+                    setError(result.error);
+                } else {
+                    setUserRole(result?.role || null);
+                }
+            }
+        };
+
+        fetchUserRole();
+    }, [user]);
+
+    const isAdmin = userRole === "Admin";
+    const isTrainer = userRole === "Trainer";
+
+    if (error) {
+        return <div className="text-center text-red-500 font-bold">{error}</div>;
+    }
+
+    // If user is not an admin or trainer, show session has not started
+    if (!isAdmin && !isTrainer) {
+        return (
+            <div className="flex flex-col items-center text-center text-red-500 font-bold text-xl">
+                <p>Session has not started.</p>
+            </div>
+        );
+    }
 
     const createSession = async () => {
         if (!client || !user) {
@@ -35,8 +76,8 @@ export default function CreateSessionPage() {
                 role: "call_member",
             })).concat({ user_id: user.id, role: "call_member" })
                 .filter((v: { user_id: any }, i: number, a: any[]) => a.findIndex((v2: { user_id: any }) => v2.user_id === v.user_id) === i);
-            
-            const starts_at  = new Date(startTimeInput || Date.now()).toISOString();
+
+            const starts_at = new Date(startTimeInput || Date.now()).toISOString();
 
             await call.getOrCreate({
                 data: {
@@ -53,7 +94,7 @@ export default function CreateSessionPage() {
             alert("Something went wrong. Please try again later.");
         }
     };
- 
+
     if (!client || !user) {
         return (
             <Loader2 className="mx-auto animate-spin" />
@@ -62,7 +103,7 @@ export default function CreateSessionPage() {
     return (
         <div className="flex flex-col items-center space-y-6">
             <h1 className="text-center text-2xl font-bold">Welcome: {user?.fullName}</h1>
-            <div className="w-80 mx-auto space-y-6 rounded-md bg-slate-100 p-5">
+            <div className="w-100 mx-auto space-y-6 rounded-md bg-slate-200 p-5">
                 <h2 className="font-bold text-xl">Create/Start A New Session</h2>
                 <DescriptionInput value={descriptionInput} onChange={setDescriptionInput} />
                 <StartTimeInput value={startTimeInput} onChange={setStartTimeInput} />
@@ -80,58 +121,86 @@ interface DescriptionInputProps {
 }
 
 function DescriptionInput({ value, onChange }: DescriptionInputProps) {
-    const [active, setActive] = useState(false)
+    const [active, setActive] = useState(false);
 
     return (
-        <div className="space-y-2">
-            <div className="font-medium">Session Info:</div>
-            <label htmlFor="" className="flex items-center gap-1.5">
-                <input type="checkbox" checked={active} onChange={(e) => {
-                    setActive(e.target.checked)
-                    onChange("")
-                }}
-                    className="" />
-                Add Session Details
-            </label>
-            {active && (
-                <label htmlFor="" className="block space-y-1">
-                    <span className="font-medium">Session Details</span>
-                    <textarea name="" id="" value={value} onChange={(e) => onChange(e.target.value)}
-                        maxLength={500} className="w-full rounded-md border-gray-100 p-2"></textarea>
-                </label>
-            )}
+        <div className="space-y-4">
+            <Label className="text-lg font-semibold">Session Info:</Label>
+            <div className="flex items-center gap-2">
+                <Checkbox
+                    checked={active}
+                    onCheckedChange={(checked) => {
+                        setActive(!!checked);
+                        onChange(""); // Reset input when toggling
+                    }}
+                />
+                <Label className="cursor-pointer">Add Session Details</Label>
+            </div>
 
+            {active && (
+                <div className="space-y-2">
+                    <Label className="text-lg font-semibold">Session Details</Label>
+                    <Textarea
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        maxLength={500}
+                        placeholder="Enter session details..."
+                        className="w-full"
+                    />
+                </div>
+            )}
         </div>
-    )
+    );
 }
+
 
 interface StartTimeInputProps {
     value: string,
     onChange: (value: string) => void;
 }
 
+
 function StartTimeInput({ value, onChange }: StartTimeInputProps) {
     const [active, setActive] = useState(false);
-    const dateTimeLocalNow = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 16)
+    const dateTimeLocalNow = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60_000)
+        .toISOString()
+        .slice(0, 16);
+
     return (
-        <div className="space-y-2">
-            <div className="font-medium">Session Start Time:</div>
-            <label className="flex items-center gap-1.5">
-                <input type="radio" checked={!active} onChange={() => { setActive(false); onChange(dateTimeLocalNow); }} />
-                Start Session Immediately
-            </label>
-            <label className="flex items-center gap-1.5">
-                <input type="radio" checked={active} onChange={() => { setActive(true); onChange(dateTimeLocalNow) }} />
-                Set Time/Date For Session
-            </label>
+        <div className="space-y-4">
+            <Label className="text-lg font-semibold">Session Start Time:</Label>
+            <RadioGroup
+                className="space-y-2"
+                defaultValue="immediate"
+                onValueChange={(val) => {
+                    setActive(val === "scheduled");
+                    onChange(dateTimeLocalNow);
+                }}
+            >
+                <Label className="flex items-center gap-2 cursor-pointer">
+                    <RadioGroupItem value="immediate" checked={!active} />
+                    Start Session Immediately
+                </Label>
+                <Label className="flex items-center gap-2 cursor-pointer">
+                    <RadioGroupItem value="scheduled" checked={active} />
+                    Set Time/Date For Session
+                </Label>
+            </RadioGroup>
+
             {active && (
-                <label className="block space-y-1">
-                    <span className="font-medium">Start Time:</span>
-                    <input type="datetime-local" value={value} min={dateTimeLocalNow} onChange={(e) => onChange(e.target.value)} className="w-full rounded-md border-gray-100 p-2" />
-                </label>
+                <div className="space-y-2">
+                    <Label className="text-lg font-semibold">Start Time:</Label>
+                    <Input
+                        type="datetime-local"
+                        value={value}
+                        min={dateTimeLocalNow}
+                        onChange={(e: any) => onChange(e.target.value)}
+                        className="w-full"
+                    />
+                </div>
             )}
         </div>
-    )
+    );
 }
 
 interface ParticipantsInputPros {
@@ -143,25 +212,40 @@ function ParticipantsInput({ value, onChange }: ParticipantsInputPros) {
     const [active, setActive] = useState(false);
 
     return (
-        <div className="space-y-2">
-            <div className="font-medium">Participants:</div>
-            <label className="flex items-center gap-1.5">
-                <input type="radio" checked={!active} onChange={() => { setActive(false); onChange("") }} />
-                Everyone With Link Can Join
-            </label>
-            <label className="flex items-center gap-1.5">
-                <input type="radio" checked={active} onChange={() => { setActive(true); onChange("") }} />
-                Private Session
-            </label>
+        <div className="space-y-4">
+            <Label className="text-lg font-semibold">Participants:</Label>
+            <RadioGroup
+                className="space-y-2"
+                defaultValue="public"
+                onValueChange={(val) => {
+                    setActive(val === "private");
+                    onChange("");
+                }}
+            >
+                <Label className="flex items-center gap-2 cursor-pointer">
+                    <RadioGroupItem value="public" checked={!active} />
+                    Everyone With Link Can Join
+                </Label>
+                <Label className="flex items-center gap-2 cursor-pointer">
+                    <RadioGroupItem value="private" checked={active} />
+                    Private Session
+                </Label>
+            </RadioGroup>
+
             {active && (
-                <label className="block space-y-1">
-                    <span className="font-medium">Particpants</span>
-                    <textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder="Participants Here"
-                        maxLength={500} className="w-full rounded-md border-gray-100 p-2"></textarea>
-                </label>
+                <div className="space-y-2">
+                    <Label className="text-lg font-semibold">Participants (Emails)</Label>
+                    <Textarea
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        placeholder="Enter participants' emails, separated by commas"
+                        maxLength={500}
+                        className="w-full"
+                    />
+                </div>
             )}
         </div>
-    )
+    );
 }
 
 interface SessionLinkProps {
@@ -178,10 +262,10 @@ function SessonLink({ call }: SessionLinkProps) {
                     Session Link: {""}
                     <Link href={sessionLink} target="_blank" className="font-medium">{sessionLink}</Link>
                 </span>
-                <button title="Copy Session Link" onClick={() => { 
+                <button title="Copy Session Link" onClick={() => {
                     navigator.clipboard.writeText(sessionLink)
                     alert("Link Copied")
-                    }}>
+                }}>
                     <Copy />
                 </button>
             </div>
@@ -193,15 +277,15 @@ function SessonLink({ call }: SessionLinkProps) {
     )
 }
 
-function getMailToLink(SessonLink: string, startsAt?: Date, description?: string,){
-    const startDateFormatted = startsAt ? startsAt.toLocaleString("en-US",{
+function getMailToLink(SessonLink: string, startsAt?: Date, description?: string,) {
+    const startDateFormatted = startsAt ? startsAt.toLocaleString("en-US", {
         dateStyle: "full",
         timeStyle: "short",
-    }): undefined
+    }) : undefined
 
-    const subject = "Your Online Session Starts At " + (startDateFormatted ? `${startDateFormatted}`: "");
+    const subject = "Your Online Session Starts At " + (startDateFormatted ? `${startDateFormatted}` : "");
 
-    const body = `Session Link: ${SessonLink}.` + (startDateFormatted ? `\n\n Session Starts At: ${startDateFormatted}`: "")
+    const body = `Session Link: ${SessonLink}.` + (startDateFormatted ? `\n\n Session Starts At: ${startDateFormatted}` : "")
         + (description ? `\n\n Session Details ${description}` : "");
 
     return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}}`

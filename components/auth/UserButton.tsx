@@ -55,7 +55,7 @@ const UserButton = () => {
             )}
             {isAdmin && (
               <DropdownMenuItem asChild>
-                <Link href="/dashboard">Dashboard</Link>
+                <Link href="/admin">Dashboard</Link>
               </DropdownMenuItem>
             )}
             {(isAdmin || isTrainer || isMember) && (

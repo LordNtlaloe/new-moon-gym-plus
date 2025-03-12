@@ -8,7 +8,7 @@ export default function RootLayout({
 }) {
     return (
         <div className="">
-            <body className="">
+            <body className="w-100 max-width-[200px]">
                 {children}
             </body>
         </div>
