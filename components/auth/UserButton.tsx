@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useUser, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { getUserByRole } from "@/app/_actions/users.actions";
 import { FaUserCircle } from "react-icons/fa";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -9,8 +10,32 @@ import Link from "next/link";
 
 const UserButton = () => {
   const { user } = useUser();
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const isAdmin = user?.publicMetadata?.role === "admin"; // Assuming 'role' is stored in publicMetadata
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.id) {
+        const result = await getUserByRole(user.id); // Use clerkId here
+
+        if (result.error) {
+          setError(result.error); // Set error if any
+        } else {
+          setUserRole(result?.role || null); // Set role if user is found
+        }
+      }
+    };
+
+    fetchUserRole();
+  }, [user]);
+
+  const isAdmin = userRole === "Admin";
+  const isTrainer = userRole === "Trainer";
+  const isMember = userRole === "Member";
+
+  if (error) {
+    return <div>Error: {error}</div>; // Display error if there is one
+  }
 
   return (
     <div>
@@ -23,12 +48,19 @@ const UserButton = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem asChild>
-              <Link href="/settings">Settings</Link>
-            </DropdownMenuItem>
+            {(isAdmin || isTrainer) && (
+              <DropdownMenuItem asChild>
+                <Link href="/online-sessions">Online Sessions</Link>
+              </DropdownMenuItem>
+            )}
             {isAdmin && (
               <DropdownMenuItem asChild>
                 <Link href="/dashboard">Dashboard</Link>
+              </DropdownMenuItem>
+            )}
+            {(isAdmin || isTrainer || isMember) && (
+              <DropdownMenuItem asChild>
+                <Link href="/profile">Profile</Link>
               </DropdownMenuItem>
             )}
             <DropdownMenuItem asChild>

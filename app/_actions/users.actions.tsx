@@ -107,31 +107,32 @@ export const getUserByEmail = async (email: string) => {
 
 };
 
-export const getUserByRole = async (role: string) => {
+export const getUserByRole = async (clerkId: string) => {
     if (!dbConnection) await init();
 
     try {
-
         const collection = await database?.collection("users");
 
         if (!database || !collection) {
             console.log("Failed to connect to collection...");
-            return;
+            return { error: "Failed to connect to database" };
         }
 
-        let user = await collection
-            .findOne({ "role": role })
+        // Now querying by clerkId
+        let user = await collection.findOne({ clerkId: clerkId });
 
         if (user) {
-            user = { ...user, _id: user._id.toString() }
+            user = { ...user, _id: user._id.toString() }; // Ensure _id is returned as string
+            return user; // Return the user data
         }
 
+        return { error: "User not found" }; // Return an error message if no user is found
     } catch (error: any) {
-        console.log("An error occured...", error.message);
-        return { "error": error.message };
+        console.log("An error occurred...", error.message);
+        return { error: error.message }; // Return the error message
     }
-
 };
+
 
 
 export const getUserById = async (_id: string) => {

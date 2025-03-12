@@ -99,6 +99,31 @@ function Header() {
           >
             Sessions
           </Link>
+          <div className="flex items-center gap-6">
+            <div className="">
+              <UserButton />
+            </div>
+
+            {/* Dropdown for Join Us Button */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="border-[rgb(255,255,255,0.3)] border-2 py-2 px-2 rounded-md flex items-center gap-4">
+                  <i className="fa-solid fa-plus bg-[#ff0000] text-white p-2.5 rounded-md group-hover:rotate-[180deg] duration-300 ease-linear"></i>
+                  <h3 className="text-white text-[0.875rem] mr-4 font-bold uppercase tracking-wider">
+                    Join Us
+                  </h3>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild>
+                  <Link href="/waiting-list">Sign-Up For Our Waiting List</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/book-consultation">Book A Consultation</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         <div className="flex items-center gap-6">
           <button
@@ -107,29 +132,6 @@ function Header() {
           >
             <FaBars size={24} />
           </button>
-          <div className="">
-            <UserButton />
-          </div>
-
-          {/* Dropdown for Join Us Button */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="border-[rgb(255,255,255,0.3)] border-2 py-2 px-2 rounded-md flex items-center gap-4">
-                <i className="fa-solid fa-plus bg-[#ff0000] text-white p-2.5 rounded-md group-hover:rotate-[180deg] duration-300 ease-linear"></i>
-                <h3 className="text-white text-[0.875rem] mr-4 font-bold uppercase tracking-wider">
-                  Join Us
-                </h3>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem asChild>
-                <Link href="/waiting-list">Sign-Up For Our Waiting List</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/book-consultation">Book A Consultation</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </header>
     </section>
