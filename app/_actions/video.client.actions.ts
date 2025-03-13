@@ -13,7 +13,7 @@ export async function getToken() {
 
     const user = await currentUser();
 
-    console.log("Generating Token For User: ", user?.id)
+    // console.log("Generating Token For User: ", user?.id)
 
     if(!user){
         throw new Error("User Not Authenticated")
