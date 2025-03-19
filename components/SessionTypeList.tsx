@@ -11,6 +11,7 @@ import ReactDatePicker from 'react-datepicker';
 import { useToast } from './ui/use-toast';
 import { Input } from './ui/input';
 import { getUserByRole } from '@/app/_actions/users.actions';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const initialValues = {
   dateTime: new Date(),
@@ -76,7 +77,7 @@ const SessionTypeList = () => {
   const allowedActions = userRole === 'Admin' || userRole === 'Trainer';
 
   return (
-    <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+    <ScrollArea className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
       {allowedActions && (
         <>
           <HomeCard
@@ -161,7 +162,7 @@ const SessionTypeList = () => {
           handleClick={createSession}
         />
       )}
-    </section>
+    </ScrollArea>
   );
 };
 
