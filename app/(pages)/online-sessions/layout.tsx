@@ -1,18 +1,26 @@
+import { ReactNode } from "react";
+import { Inter } from "next/font/google";
+
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-import "./session.css"
+import "react-datepicker/dist/react-datepicker.css";
+import "./session.css";
+import { Toaster } from "@/components/ui/toaster";
 
-export default function RootLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
-    return (
-        <div className="">
-            <body className="w-100 max-width-[200px]">
-                {children}
-            </body>
-        </div>
+const inter = Inter({ subsets: ["latin"] });
 
-    )
-
+interface LayoutProps {
+  children: ReactNode;
 }
+
+const Layout = ({ children }: LayoutProps) => {
+  return (
+    <div>
+      <div className={`${inter.className} bg-dark-2`}>
+        <Toaster />
+        {children}
+      </div>
+    </div>
+  );
+};
+
+export default Layout;

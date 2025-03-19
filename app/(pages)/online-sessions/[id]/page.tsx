@@ -1,34 +1,49 @@
-import { Metadata } from 'next';
-import React from 'react'
-import SessionPage from './SessionPage';
-import { currentUser } from '@clerk/nextjs/server';
-import SessionLoginPage from './SessionLoginPage';
+'use client';
 
-interface PageProps {
-  params: { id: string };
-  searchParams: {guest: string}
-}
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
+import { useParams } from 'next/navigation';
+import { Loader } from 'lucide-react';
 
-export function generateMetadata({ params: { id } }: PageProps): Metadata {
-  return {
-    title: `Session: ${id}`
-  }
-}
+import { useGetCallById } from '@/hooks/useGetCallById';
+import Alert from '@/components/Alert';
+import MeetingSetup from '@/components/MeetingSetup';
+import MeetingRoom from '@/components/MeetingRoom';
 
-export default async function page({ params: { id }, searchParams: {guest}}: PageProps) {
-  const user = await currentUser();
-  const guestMode = guest === "true";
-  if(!user && !guestMode){
-    return(
-      <div className="my-20 py-20">
-        <SessionLoginPage />
-      </div>
-      
-    )
-  }
+const MeetingPage = () => {
+  const { id } = useParams();
+  const { isLoaded, user } = useUser();
+  const { call, isCallLoading } = useGetCallById(id);
+  const [isSetupComplete, setIsSetupComplete] = useState(false);
+
+  if (!isLoaded || isCallLoading) return <Loader />;
+
+  if (!call) return (
+    <p className="text-center text-3xl font-bold text-white">
+      Call Not Found
+    </p>
+  );
+
+  // get more info about custom call type:  https://getstream.io/video/docs/react/guides/configuring-call-types/
+  const notAllowed = call.type === 'invited' && (!user || !call.state.members.find((m) => m.user.id === user.id));
+
+  if (notAllowed) return <Alert title="You are not allowed to join this meeting" />;
+
   return (
-    <div className='my-40 py-20'>
-      <SessionPage id={id} />
-    </div>
-  )
-}
+    <main className="h-screen w-full">
+      <StreamCall call={call}>
+        <StreamTheme>
+
+        {!isSetupComplete ? (
+          <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+        ) : (
+          <MeetingRoom />
+        )}
+        </StreamTheme>
+      </StreamCall>
+    </main>
+  );
+};
+
+export default MeetingPage;
