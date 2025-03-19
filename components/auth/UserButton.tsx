@@ -31,7 +31,7 @@ const UserButton = () => {
 
   const isAdmin = userRole === "Admin";
   const isTrainer = userRole === "Trainer";
-  const isMember = userRole === "Member";
+  const isMember = userRole === "member";
 
   if (error) {
     return <div>Error: {error}</div>; // Display error if there is one
