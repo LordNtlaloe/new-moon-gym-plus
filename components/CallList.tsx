@@ -46,7 +46,7 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
   useEffect(() => {
     const fetchRecordings = async () => {
       const callData = await Promise.all(
-        callRecordings?.map((meeting) => meeting.queryRecordings()) ?? [],
+        callRecordings?.map((session) => session.queryRecordings()) ?? [],
       );
 
       const recordings = callData
@@ -92,9 +92,9 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
     <>
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         {calls && calls.length > 0 ? (
-          calls.map((meeting: Call | CallRecording) => (
+          calls.map((session: Call | CallRecording) => (
             <SessionCard
-              key={(meeting as Call).id || (meeting as CallRecording).url}
+              key={(session as Call).id || (session as CallRecording).url}
               icon={
                 type === 'ended'
                   ? '/icons/previous.svg'
@@ -103,31 +103,31 @@ const CallList = ({ type }: { type: 'ended' | 'upcoming' | 'recordings' }) => {
                     : '/icons/recordings.svg'
               }
               title={
-                (meeting as Call).state?.custom?.description ||
-                (meeting as CallRecording).filename?.substring(0, 20) ||
+                (session as Call).state?.custom?.description ||
+                (session as CallRecording).filename?.substring(0, 20) ||
                 'No Description'
               }
               date={
-                (meeting as Call).state?.startsAt?.toLocaleString() ||
-                (meeting as CallRecording).start_time?.toLocaleString()
+                (session as Call).state?.startsAt?.toLocaleString() ||
+                (session as CallRecording).start_time?.toLocaleString()
               }
               isPreviousSession={type === 'ended'}
               link={
                 type === 'recordings'
-                  ? (meeting as CallRecording).url
-                  : `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${(meeting as Call).id}`
+                  ? (session as CallRecording).url
+                  : `${process.env.NEXT_PUBLIC_BASE_URL}/online-sessions/${(session as Call).id}`
               }
               buttonIcon1={type === 'recordings' ? '/icons/play.svg' : undefined}
               buttonText={type === 'recordings' ? 'Play' : 'Start'}
               handleClick={
                 type === 'recordings'
-                  ? () => router.push(`${(meeting as CallRecording).url}`)
-                  : () => router.push(`/meeting/${(meeting as Call).id}`)
+                  ? () => router.push(`${(session as CallRecording).url}`)
+                  : () => router.push(`/online-sessions/${(session as Call).id}`)
               }
               buttonIcon2={<Trash2 className="h-4 w-4" />}
               buttonText2="Delete"
               handleSecondaryClick={() => 
-                handleDeleteCall((meeting as Call).id || (meeting as CallRecording).url)
+                handleDeleteCall((session as Call).id || (session as CallRecording).url)
               }
             />
           ))

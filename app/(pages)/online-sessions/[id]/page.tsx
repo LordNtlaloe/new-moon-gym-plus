@@ -8,10 +8,10 @@ import { Loader } from 'lucide-react';
 
 import { useGetCallById } from '@/hooks/useGetCallById';
 import Alert from '@/components/Alert';
-import MeetingSetup from '@/components/MeetingSetup';
-import MeetingRoom from '@/components/MeetingRoom';
+import SessionSetup from '@/components/SessionSetup';
+import SessionRoom from '@/components/SessionRoom';
 
-const MeetingPage = () => {
+const SessionPage = () => {
   const { id } = useParams();
   const { isLoaded, user } = useUser();
   const { call, isCallLoading } = useGetCallById(id);
@@ -28,7 +28,7 @@ const MeetingPage = () => {
   // get more info about custom call type:  https://getstream.io/video/docs/react/guides/configuring-call-types/
   const notAllowed = call.type === 'invited' && (!user || !call.state.members.find((m) => m.user.id === user.id));
 
-  if (notAllowed) return <Alert title="You are not allowed to join this meeting" />;
+  if (notAllowed) return <Alert title="You are not allowed to join this session" />;
 
   return (
     <main className="h-screen w-full">
@@ -36,9 +36,9 @@ const MeetingPage = () => {
         <StreamTheme>
 
         {!isSetupComplete ? (
-          <MeetingSetup setIsSetupComplete={setIsSetupComplete} />
+          <SessionSetup setIsSetupComplete={setIsSetupComplete} />
         ) : (
-          <MeetingRoom />
+          <SessionRoom />
         )}
         </StreamTheme>
       </StreamCall>
@@ -46,4 +46,4 @@ const MeetingPage = () => {
   );
 };
 
-export default MeetingPage;
+export default SessionPage;

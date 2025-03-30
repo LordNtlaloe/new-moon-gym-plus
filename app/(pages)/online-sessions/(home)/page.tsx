@@ -13,14 +13,14 @@ const Home = () => {
   useEffect(() => {
     if (upcomingCalls && upcomingCalls.length > 0) {
       const nextSession = upcomingCalls[0];
-      const meetingTime = nextSession?.state?.startsAt
+      const sessionTime = nextSession?.state?.startsAt
         ? new Date(nextSession.state.startsAt).toLocaleTimeString("en-US", {
             hour: "2-digit",
             minute: "2-digit",
           })
         : "No Upcoming Session";
 
-      setNextSessionTime(meetingTime);
+      setNextSessionTime(sessionTime);
     }
   }, [upcomingCalls]);
 

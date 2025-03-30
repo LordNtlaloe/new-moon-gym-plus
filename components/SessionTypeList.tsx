@@ -1,32 +1,32 @@
-"use client"
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import HomeCard from './HomeCard';
-import SessionModal from './SessionModal';
-import { Call, useStreamVideoClient } from '@stream-io/video-react-sdk';
-import { useUser } from '@clerk/nextjs';
-import Loader from './Loader';
-import { Textarea } from './ui/textarea';
-import ReactDatePicker from 'react-datepicker';
-import { useToast } from './ui/use-toast';
-import { Input } from './ui/input';
-import { getUserByRole } from '@/app/_actions/users.actions';
-import { ScrollArea } from '@/components/ui/scroll-area';
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import HomeCard from "./HomeCard";
+import SessionModal from "./SessionModal";
+import { Call, useStreamVideoClient } from "@stream-io/video-react-sdk";
+import { useUser } from "@clerk/nextjs";
+import Loader from "./Loader";
+import { Textarea } from "./ui/textarea";
+import ReactDatePicker from "react-datepicker";
+import { useToast } from "./ui/use-toast";
+import { Input } from "./ui/input";
+import { getUserByRole } from "@/app/_actions/users.actions";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const initialValues = {
   dateTime: new Date(),
-  description: '',
-  link: '',
+  description: "",
+  link: "",
 };
 
 const SessionTypeList = () => {
   const router = useRouter();
   const [SessionState, setSessionState] = useState<
-    'isScheduleSession' | 'isJoiningSession' | 'isInstantSession' | undefined
+    "isScheduleSession" | "isJoiningSession" | "isInstantSession" | undefined
   >(undefined);
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
-  const [userRole, setUserRole] = useState<string>('');
+  const [userRole, setUserRole] = useState<string>("");
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
@@ -47,14 +47,14 @@ const SessionTypeList = () => {
     if (!client || !user) return;
     try {
       if (!values.dateTime) {
-        toast({ title: 'Please select a date and time' });
+        toast({ title: "Please select a date and time" });
         return;
       }
       const id = crypto.randomUUID();
-      const call = client.call('default', id);
-      if (!call) throw new Error('Failed to create Session');
+      const call = client.call("default", id);
+      if (!call) throw new Error("Failed to create Session");
       const startsAt = values.dateTime.toISOString();
-      const description = values.description || 'Instant Session';
+      const description = values.description || "Instant Session";
       await call.getOrCreate({
         data: {
           starts_at: startsAt,
@@ -65,19 +65,19 @@ const SessionTypeList = () => {
       if (!values.description) {
         router.push(`/online-sessions/${call.id}`);
       }
-      toast({ title: 'Session Created' });
+      toast({ title: "Session Created" });
     } catch (error) {
       console.error(error);
-      toast({ title: 'Failed to create Session' });
+      toast({ title: "Failed to create Session" });
     }
   };
 
   if (!client || !user) return <Loader />;
 
-  const allowedActions = userRole === 'Admin' || userRole === 'Trainer';
+  const allowedActions = userRole === "Admin" || userRole === "Trainer";
 
   return (
-    <ScrollArea>
+    <div className="h-screen">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {allowedActions && (
           <>
@@ -85,14 +85,14 @@ const SessionTypeList = () => {
               img="/icons/add-session.svg"
               title="New "
               description="Start an instant Session"
-              handleClick={() => setSessionState('isInstantSession')}
+              handleClick={() => setSessionState("isInstantSession")}
             />
             <HomeCard
               img="/icons/schedule.svg"
               title="Schedule Session"
               description="Plan your Session"
               className="bg-purple-1"
-              handleClick={() => setSessionState('isScheduleSession')}
+              handleClick={() => setSessionState("isScheduleSession")}
             />
           </>
         )}
@@ -101,17 +101,17 @@ const SessionTypeList = () => {
           title="Join Session"
           description="via invitation link"
           className="bg-blue-1"
-          handleClick={() => setSessionState('isJoiningSession')}
+          handleClick={() => setSessionState("isJoiningSession")}
         />
         <HomeCard
           img="/icons/recordings.svg"
           title="View Recordings"
           description="Session Recordings"
           className="bg-yellow-1"
-          handleClick={() => router.push('/online-sessions/recordings')}
+          handleClick={() => router.push("/online-sessions/recordings")}
         />
 
-        {SessionState === 'isScheduleSession' && allowedActions && (
+        {SessionState === "isScheduleSession" && allowedActions && (
           <SessionModal
             isOpen
             onClose={() => setSessionState(undefined)}
@@ -119,14 +119,20 @@ const SessionTypeList = () => {
             handleClick={createSession}
           >
             <div className="flex flex-col gap-2.5">
-              <label className="text-base font-normal text-sky-2">Add a description</label>
+              <label className="text-base font-normal text-sky-2">
+                Add a description
+              </label>
               <Textarea
                 className="border-none bg-dark-3"
-                onChange={(e) => setValues({ ...values, description: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, description: e.target.value })
+                }
               />
             </div>
             <div className="flex w-full flex-col gap-2.5">
-              <label className="text-base font-normal text-sky-2">Select Date and Time</label>
+              <label className="text-base font-normal text-sky-2">
+                Select Date and Time
+              </label>
               <ReactDatePicker
                 selected={values.dateTime}
                 onChange={(date) => setValues({ ...values, dateTime: date! })}
@@ -141,7 +147,7 @@ const SessionTypeList = () => {
         )}
 
         <SessionModal
-          isOpen={SessionState === 'isJoiningSession'}
+          isOpen={SessionState === "isJoiningSession"}
           onClose={() => setSessionState(undefined)}
           title="Type the link here"
           buttonText="Join Session"
@@ -156,7 +162,7 @@ const SessionTypeList = () => {
 
         {allowedActions && (
           <SessionModal
-            isOpen={SessionState === 'isInstantSession'}
+            isOpen={SessionState === "isInstantSession"}
             onClose={() => setSessionState(undefined)}
             title="Start an Instant Session"
             buttonText="Start Session"
@@ -164,7 +170,7 @@ const SessionTypeList = () => {
           />
         )}
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 

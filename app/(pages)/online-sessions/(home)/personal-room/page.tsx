@@ -33,14 +33,14 @@ const PersonalRoom = () => {
   const client = useStreamVideoClient();
   const { toast } = useToast();
 
-  const meetingId = user?.id;
+  const sessionId = user?.id;
 
-  const { call } = useGetCallById(meetingId!);
+  const { call } = useGetCallById(sessionId!);
 
   const startRoom = async () => {
     if (!client || !user) return;
 
-    const newCall = client.call("default", meetingId!);
+    const newCall = client.call("default", sessionId!);
 
     if (!call) {
       await newCall.getOrCreate({
@@ -50,27 +50,27 @@ const PersonalRoom = () => {
       });
     }
 
-    router.push(`/meeting/${meetingId}?personal=true`);
+    router.push(`/online-sessions/${sessionId}?personal=true`);
   };
 
-  const meetingLink = `${process.env.NEXT_PUBLIC_BASE_URL}/meeting/${meetingId}?personal=true`;
+  const sessionLink = `${process.env.NEXT_PUBLIC_BASE_URL}/online-sessions/${sessionId}?personal=true`;
 
   return (
     <section className="flex size-full flex-col gap-10 text-white">
-      <h1 className="text-xl font-bold lg:text-3xl">Personal Meeting Room</h1>
+      <h1 className="text-xl font-bold lg:text-3xl">Personal Session Room</h1>
       <div className="flex w-full flex-col gap-8 xl:max-w-[900px]">
-        <Table title="Topic" description={`${user?.fullName || user?.id}'s Meeting Room`} />
-        <Table title="Meeting ID" description={meetingId!} />
-        <Table title="Invite Link" description={meetingLink} />
+        <Table title="Topic" description={`${user?.fullName || user?.id}'s Session Room`} />
+        <Table title="Session ID" description={sessionId!} />
+        <Table title="Invite Link" description={sessionLink} />
       </div>
       <div className="flex gap-5">
         <Button className="bg-blue-1" onClick={startRoom}>
-          Start Meeting
+          Start Session
         </Button>
         <Button
           className="bg-dark-3"
           onClick={() => {
-            navigator.clipboard.writeText(meetingLink);
+            navigator.clipboard.writeText(sessionLink);
             toast({
               title: "Link Copied",
             });
