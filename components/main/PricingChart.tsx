@@ -55,7 +55,7 @@ function PricingChart() {
             <div className="bg-white pb-12 pt-8 shadow-xl flex flex-col items-center justify-center gap-6 lg:gap-4">
               <div className="flex gap-2 items-center lg:mb-2">
                 <span className="text-xl">M</span>
-                <span className="font-bold text-[3.5rem]">500</span>
+                <span className="font-bold text-[3.5rem]">650</span>
                 <span className="text-xl">p/m</span>
               </div>
               <p className="text-[#FF0000] px-5">Plus M150 Registration Fee</p>
@@ -173,7 +173,7 @@ function PricingChart() {
             <div className="bg-white pb-12 pt-8 shadow-xl flex flex-col items-center justify-center gap-6 lg:gap-4">
               <div className="flex gap-2 items-center lg:mb-2">
                 <span className="text-xl">M</span>
-                <span className="font-bold text-[3.5rem]">200</span>
+                <span className="font-bold text-[3.5rem]">300</span>
                 <span className="text-xl">p/m</span>
               </div>
               <p className="text-[#FF0000] px-5">Plus M150 Registration Fee</p>
