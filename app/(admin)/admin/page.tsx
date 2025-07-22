@@ -1,42 +1,50 @@
-// app/dashboard/page.tsx
-"use server";
-import { redirect } from "next/navigation";
-import { getUserByRole } from "@/app/_actions/users.actions"; // Update this path as needed
-// import StatsContainer from "@/components/dashboard/overview/StatsContainer"; // Import StatsContainer
-// import SalesOverviewChart from "@/components/dashboard/overview/SalesOverviewChart";
-// import CategoryDistributionChart from "@/components/dashboard/overview/CategoryDistributionChart";
-// import SalesChannelChart from "@/components/dashboard/overview/SalesChannelChart";
+// app/admin/sync-users/page.tsx
+'use client'
 
-const DashboardPage = async () => {
-  try {
-    const user = await getUserByRole("Admin");
+import { syncClerkUsersToMongoDB } from '@/app/_actions/users.actions'
+import { Button } from '@/components/ui/button'
+import { useToast } from '@/components/ui/use-toast'
+import { useState } from 'react'
 
-    // If user is not found or not an admin, redirect
-    if (!user) {
-      redirect("/");
+export default function SyncUsersPage() {
+  const [isSyncing, setIsSyncing] = useState(false)
+  const { toast } = useToast()
+
+  const handleSync = async () => {
+    setIsSyncing(true)
+    try {
+      const result = await syncClerkUsersToMongoDB()
+      toast({
+        title: result.success ? 'Success' : 'Error',
+        description: result.success ? result.message : result.error,
+        variant: result.success ? 'default' : 'destructive'
+      })
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsSyncing(false)
     }
-
-    return (
-      <main>
-        <div className='flex-1 overflow-auto relative z-10'>
-          <main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
-            {/* Use the StatsContainer for the stats */}
-            {/* <StatsContainer /> */}
-            
-            {/* CHARTS */}
-            <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-              {/* <SalesOverviewChart />
-              <CategoryDistributionChart />
-              <SalesChannelChart /> */}
-            </div>
-          </main>
-        </div>
-      </main>
-    );
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    redirect("/");
   }
-};
 
-export default DashboardPage;
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Sync Clerk Users to MongoDB</h1>
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+        <p className="mb-4">
+          This will fetch all users from Clerk and sync them to your MongoDB database.
+          Only users not already in MongoDB will be added.
+        </p>
+        <Button
+          onClick={handleSync}
+          disabled={isSyncing}
+        >
+          {isSyncing ? 'Syncing...' : 'Sync Users Now'}
+        </Button>
+      </div>
+    </div>
+  )
+}

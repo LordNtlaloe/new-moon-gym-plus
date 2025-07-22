@@ -52,6 +52,14 @@ import {
     },
     {
       id: 2,
+      label: "Members",
+      href: "/admin/members",
+      icon: Users,
+      current: false,
+      color: "#1E1E2C"
+    },
+    {
+      id: 3,
       label: "Waiting List",
       href: "/admin/waiting-list",
       icon: Handshake,
@@ -59,7 +67,7 @@ import {
       color: "#20283E"
     },
     {
-      id: 3,
+      id: 4,
       label: "Consultations",
       href: "/admin/consultations",
       icon: Box,
@@ -68,7 +76,7 @@ import {
   
     },
     {
-      id: 4,
+      id: 5,
       label: "Online Sessions",
       href: "/admin/online-session",
       icon: Calendar,
@@ -76,7 +84,7 @@ import {
       color: "#191C24"
     },
     {
-      id: 5,
+      id: 6,
       label: "Users",
       href: "/admin/users",
       icon: Users,

@@ -5,6 +5,8 @@ import bcrypt from 'bcrypt'
 import { redirect } from "next/navigation";
 import { clerkClient } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { error } from "console";
+import { User } from "@/lib/types";
 
 let dbConnection: any;
 let database: any
@@ -107,7 +109,7 @@ export const getUserByEmail = async (email: string) => {
 
 };
 
-export const getUserByRole = async (clerkId: string) => {
+export const getUserByClerkId = async (clerkId: string) => {
     if (!dbConnection) await init();
 
     try {
@@ -133,33 +135,53 @@ export const getUserByRole = async (clerkId: string) => {
     }
 };
 
+export const getUserByRole = async (role: string) => {
+    if (!dbConnection) await init()
 
+    try {
+        const collection = await database?.collection("users");
+        if (!database || !collection) {
+            console.log("Failed To Connect To Users Collection")
+            return { error: "Failed to connect to database" };
+        }
 
-export const getUserById = async (_id: string) => {
+        // Find all users with the specified role
+        const users = await collection
+            .find({ role: role })
+            .map((user: any) => ({ ...user, _id: user._id.toString() }))
+            .toArray();
+
+        return users;
+
+    } catch (error: any) {
+        console.log("An error occurred...", error.message);
+        return { error: error.message };
+    }
+}
+
+export const getUserById = async (id: string) => {
     if (!dbConnection) await init();
 
     try {
-
         const collection = await database?.collection("users");
-
-        if (!database || !collection) {
-            console.log("Failed to connect to collection...");
-            return;
+        if (!collection || !database) {
+            return { error: "Failed To Connect To Collection" };
         }
 
-        let user = await collection
-            .findOne({ "_id": _id })
-
-        if (user) {
-            user = { ...user, _id: user._id.toString() }
+        const user = await collection.findOne({ _id: id }); // or new ObjectId(id) if using MongoDB ObjectId
+        if (!user) {
+            return { error: "User not found" };
         }
-
+        return {
+            ...user,
+            _id: user._id.toString(), // Only if using ObjectId
+        };
     } catch (error: any) {
-        console.log("An error occured...", error.message);
-        return { "error": error.message };
+        console.log("An error occurred getting user by ID:", error.message);
+        return { error: error.message };
     }
-
 };
+
 
 
 export const getUserIds = async (emailAddress: string[]) => {
@@ -356,3 +378,59 @@ export const updateUserProfilePicture = async (userId: string, newProfilePicture
         return { error: error.message };
     }
 };
+
+
+export const syncClerkUsersToMongoDB = async () => {
+    if (!dbConnection) await init()
+
+    try {
+        // Get all users from Clerk with proper typing
+        const clerkResponse = await clerkClient.users.getUserList({
+            limit: 500
+        })
+
+        // Extract the data array from the paginated response
+        const clerkUsers = clerkResponse.data
+
+        const usersCollection = database.collection("users")
+        let syncedCount = 0
+        let updatedCount = 0
+
+        for (const clerkUser of clerkUsers) {
+            // Transform Clerk user to your MongoDB schema
+            const userData: User = {
+                _id: clerkUser.id, // Using Clerk's ID as our ID
+                clerkId: clerkUser.id,
+                firstName: clerkUser.firstName || '',
+                lastName: clerkUser.lastName || '',
+                email: clerkUser.emailAddresses[0]?.emailAddress || '',
+                photo: clerkUser.imageUrl,
+                role: 'member', 
+            }
+
+            // Upsert operation
+            const result = await usersCollection.updateOne(
+                { clerkId: clerkUser.id },
+                { $set: userData },
+                { upsert: true }
+            )
+
+            if (result.upsertedCount > 0) {
+                syncedCount++
+            } else if (result.modifiedCount > 0) {
+                updatedCount++
+            }
+        }
+
+        return {
+            success: true,
+            message: `Sync completed. New users: ${syncedCount}, Updated users: ${updatedCount}`
+        }
+    } catch (error: any) {
+        console.error('Sync error:', error)
+        return {
+            success: false,
+            error: error.message
+        }
+    }
+}
