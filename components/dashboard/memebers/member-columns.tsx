@@ -87,7 +87,7 @@ export const columns: ColumnDef<Member>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                            <Link href={`/clients/${member._id}`}>
+                            <Link href={`/admin/members/${member._id}`}>
                                 View Profile
                             </Link>
                         </DropdownMenuItem>

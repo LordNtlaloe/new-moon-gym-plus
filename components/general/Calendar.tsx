@@ -5,7 +5,9 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { getMealsByDateRange, createMealEntry } from "@/app/_actions/meals.actions";
-import { MealType, UserRole } from "@/lib/types";
+import { MealType } from "@/lib/types";
+import { useAuth } from "@clerk/nextjs";
+import { UserRole } from "@/lib/types";
 
 import {
   Dialog,
@@ -28,9 +30,14 @@ interface MealDaySummary {
 
 const MealCalendar: React.FC<{
   userId: string;
-  userRole: UserRole;
+  clerkId: string;
   memberId?: string;
-}> = ({ userId, userRole, memberId }) => {
+  currentUserRole: UserRole;
+}> = ({ userId, clerkId, memberId, currentUserRole }) => {
+  const { userId: currentClerkId } = useAuth();
+  const isOwnProfile = currentClerkId === clerkId;
+  const isMember = currentUserRole === "member";
+
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedMealType, setSelectedMealType] = useState<MealType | null>(null);
   const [mealImage, setMealImage] = useState("");
@@ -41,7 +48,7 @@ const MealCalendar: React.FC<{
   const calendarRef = useRef<FullCalendar>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const displayUserId = userRole === "member" ? userId : memberId || userId;
+  const displayUserId = isOwnProfile ? userId : memberId || userId;
 
   useEffect(() => {
     const fetchMeals = async () => {
@@ -69,7 +76,7 @@ const MealCalendar: React.FC<{
   }, [displayUserId]);
 
   const handleDateClick = (dateStr: string) => {
-    if (userRole !== "member") return;
+    if (!isMember || !isOwnProfile) return;
 
     const localDate = new Date(dateStr).toLocaleDateString("en-CA");
     setSelectedDate(localDate);
@@ -136,13 +143,13 @@ const MealCalendar: React.FC<{
 
     switch (mealCount) {
       case 1:
-        return "#f97316"; // orange-500
+        return "#f97316";
       case 2:
-        return "#eab308"; // yellow-500
+        return "#eab308";
       case 3:
-        return "#22c55e"; // green-500
+        return "#22c55e";
       default:
-        return "#ef4444"; // red-500
+        return "#ef4444";
     }
   };
 
@@ -173,6 +180,7 @@ const MealCalendar: React.FC<{
       `,
     };
   };
+
   const isToday = (date: Date) => {
     const today = new Date();
     return (
@@ -183,15 +191,16 @@ const MealCalendar: React.FC<{
   };
 
   const todayStr = new Date().toISOString().split("T")[0];
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-[#1D1D1D]">
       <div className="p-4 border-b dark:border-gray-700">
         <h2 className="text-xl font-semibold">
-          {userRole === "member" ? "My Meal Tracker" : "Member Meal Compliance"}
+          {isOwnProfile ? "My Meal Tracker" : "Member Meal Compliance"}
         </h2>
-        {userRole !== "member" && (
+        {!isOwnProfile && (
           <p className="text-sm text-gray-500 mt-1">
-            Viewing meals for {memberId ? "selected member" : "your assigned members"}
+            Viewing meals for this member
           </p>
         )}
       </div>
@@ -206,14 +215,16 @@ const MealCalendar: React.FC<{
             center: "title",
             right: "dayGridMonth",
           }}
-          selectable={userRole === "member"}
+          selectable={isMember && isOwnProfile}
           dateClick={(arg) => {
-            if (arg.dateStr !== todayStr) return;
+            if (!isMember || !isOwnProfile || arg.dateStr !== todayStr) return;
             handleDateClick(arg.dateStr);
           }}
           dayCellContent={dayCellContent}
           dayCellClassNames={(arg) =>
-            isToday(arg.date) ? "cursor-pointer" : "bg-[#2D2D2D] pointer-events-none"
+            isMember && isOwnProfile && isToday(arg.date)
+              ? "cursor-pointer"
+              : "pointer-events-none"
           }
           height="auto"
         />
@@ -225,7 +236,7 @@ const MealCalendar: React.FC<{
           <LegendDot color="bg-red-500" label="No meals logged" />
         </div>
 
-        {userRole === "member" && (
+        {isMember && isOwnProfile && (
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="sm:max-w-md bg-white dark:bg-[#0D0D0D] dark:text-white">
               <DialogHeader>

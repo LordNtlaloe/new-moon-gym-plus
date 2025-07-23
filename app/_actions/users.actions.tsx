@@ -405,7 +405,7 @@ export const syncClerkUsersToMongoDB = async () => {
                 lastName: clerkUser.lastName || '',
                 email: clerkUser.emailAddresses[0]?.emailAddress || '',
                 photo: clerkUser.imageUrl,
-                role: 'member', 
+                role: 'member',
             }
 
             // Upsert operation
@@ -434,3 +434,27 @@ export const syncClerkUsersToMongoDB = async () => {
         }
     }
 }
+
+export const getUserRoleByClerkId = async (clerkId: string) => {
+    if (!dbConnection) await init();
+
+    try {
+        const collection = await database?.collection("users");
+
+        if (!database || !collection) {
+            console.log("Failed to connect to collection...");
+            return { error: "Failed to connect to database" };
+        }
+
+        let user = await collection.findOne({ clerkId: clerkId });
+
+        if (user) {
+            return { role: user.role || null }; // Return the role if user is found
+        }
+
+        return { error: "User not found" };
+    } catch (error: any) {
+        console.log("An error occurred...", error.message);
+        return { error: error.message };
+    }
+};

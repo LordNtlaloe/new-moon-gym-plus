@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { MeasurementForm } from '@/components/dashboard/weights/weight-form';
 import { MeasurementHistory } from '@/components/dashboard/weights/weight-table';
 import { MemberSidebar } from '@/components/dashboard/memebers/member-sidebar';
+import { useAuth } from "@clerk/nextjs";
+import { getUserRoleByClerkId } from '@/app/_actions/users.actions';
 
 type PageParams = {
     id: string
@@ -29,12 +31,25 @@ export default function MemberProfile({ params }: { params: PageParams }) {
     const [weightHistory, setWeightHistory] = useState<any[]>([]);
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>("member");
     const { toast } = useToast();
+    const { userId: clerkId } = useAuth();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 setLoading(true);
 
+                // Fetch current user role
+                // Fetch current user role
+                if (clerkId) {
+                    const { role, error } = await getUserRoleByClerkId(clerkId);
+                    if (error) {
+                        console.error("Error fetching user role:", error);
+                        // Handle error or set default role
+                        setCurrentUserRole("member");
+                    } else {
+                        setCurrentUserRole(role as UserRole);
+                    }
+                }
                 // Fetch member data
                 const result = await getMemberById(member_id);
                 setData(result);
@@ -43,9 +58,6 @@ export default function MemberProfile({ params }: { params: PageParams }) {
                 const measurements = await getWeightMeasurements(member_id);
                 setWeightHistory(measurements);
 
-                // Set current user role (you'll need to implement this)
-                // For example: const role = await getCurrentUserRole();
-                // setCurrentUserRole(role);
             } catch (err: any) {
                 setError(err.message);
             } finally {
@@ -54,7 +66,7 @@ export default function MemberProfile({ params }: { params: PageParams }) {
         };
 
         fetchData();
-    }, [member_id]);
+    }, [member_id, clerkId]);
 
     const handleSubmit = async (values: any) => {
         try {
@@ -138,14 +150,12 @@ export default function MemberProfile({ params }: { params: PageParams }) {
                                 <CardTitle>Measurement History</CardTitle>
                             </CardHeader>
                             <CardContent>
-
                                 <MeasurementHistory
                                     measurements={weightHistory}
                                     onDelete={handleDelete}
                                     onAddFirst={() => setIsDialogOpen(true)}
-                                    currentUserRole={currentUserRole}  // Changed from canAddMeasurements
+                                    currentUserRole={currentUserRole}
                                 />
-
                             </CardContent>
                         </Card>
 
@@ -168,25 +178,27 @@ export default function MemberProfile({ params }: { params: PageParams }) {
                 </div>
             </div>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Add New Measurement</DialogTitle>
-                    </DialogHeader>
-                    <MeasurementForm
-                        onSubmit={handleSubmit}
-                        onCancel={() => setIsDialogOpen(false)}
-                    />
-                </DialogContent>
-            </Dialog>
+            {canAddMeasurements && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogContent className="sm:max-w-[500px]">
+                        <DialogHeader>
+                            <DialogTitle>Add New Measurement</DialogTitle>
+                        </DialogHeader>
+                        <MeasurementForm
+                            onSubmit={handleSubmit}
+                            onCancel={() => setIsDialogOpen(false)}
+                        />
+                    </DialogContent>
+                </Dialog>
+            )}
 
             <div className="px-4 md:px-8 max-w-7xl mx-auto pb-8">
                 {data.user?._id && data.user?.role && (
                     <MealCalendar
                         userId={data.user._id}
                         clerkId={data.user.clerkId}
-                        memberId={data.member?._id} 
-                        currentUserRole={data.user.role as UserRole}
+                        memberId={data.member?._id}
+                        currentUserRole={currentUserRole}
                     />
                 )}
             </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useUser, SignOutButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { getUserByRole } from "@/app/_actions/users.actions";
+import { getUserRoleByClerkId } from "@/app/_actions/users.actions";
 import { FaUserCircle } from "react-icons/fa";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,12 @@ const UserButton = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (user?.id) {
-        const result = await getUserByRole(user.id); // Use clerkId here
+        const result = await getUserRoleByClerkId(user.id); // Use the new function
 
         if (result.error) {
-          setError(result.error); // Set error if any
+          setError(result.error);
         } else {
-          setUserRole(result?.role || null); // Set role if user is found
+          setUserRole(result?.role || null);
         }
       }
     };
@@ -31,10 +31,10 @@ const UserButton = () => {
 
   const isAdmin = userRole === "Admin";
   const isTrainer = userRole === "Trainer";
-  const isMember = userRole === "member";
+  const isMember = userRole === "member" || !userRole; // Consider users with no role as members
 
   if (error) {
-    return <div>Error: {error}</div>; // Display error if there is one
+    return <div>Error: {error}</div>;
   }
 
   return (
