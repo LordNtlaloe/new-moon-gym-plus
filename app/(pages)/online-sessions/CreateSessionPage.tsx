@@ -4,10 +4,9 @@ import { useUser } from "@clerk/nextjs"
 import { Call, MemberRequest, useStreamVideoClient } from "@stream-io/video-react-sdk";
 import { Copy, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getUserIds } from "@/app/_actions/users.actions";
+import { getUserIds, getUserRoleByClerkId } from "@/app/_actions/users.actions";
 import Button from "@/app/components/main/SessionButton";
 import Link from "next/link";
-import { getUserByRole } from "@/app/_actions/users.actions";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +19,7 @@ export default function CreateSessionPage() {
     const [participantsInputs, setParticipantsInput] = useState("");
     const [userRole, setUserRole] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isLoadingRole, setIsLoadingRole] = useState(true); // Add loading state
     const [call, setCall] = useState<Call>()
     const client = useStreamVideoClient();
 
@@ -28,12 +28,24 @@ export default function CreateSessionPage() {
     useEffect(() => {
         const fetchUserRole = async () => {
             if (user?.id) {
-                const result = await getUserByRole(user.id);
+                setIsLoadingRole(true);
+                console.log('Fetching role for Clerk ID:', user.id); // Debug log
 
-                if (result.error) {
-                    setError(result.error);
-                } else {
-                    setUserRole(result?.role || null);
+                try {
+                    const result = await getUserRoleByClerkId(user.id);
+                    console.log('Role result:', result); // Debug log
+
+                    if (result.error) {
+                        setError(result.error);
+                    } else {
+                        setUserRole(result?.role || null);
+                        console.log('Set user role to:', result?.role); // Debug log
+                    }
+                } catch (error) {
+                    console.error('Error fetching user role:', error);
+                    setError('Failed to fetch user role');
+                } finally {
+                    setIsLoadingRole(false);
                 }
             }
         };
@@ -41,18 +53,31 @@ export default function CreateSessionPage() {
         fetchUserRole();
     }, [user]);
 
+    console.log(userRole)
+
     const isAdmin = userRole === "Admin";
     const isTrainer = userRole === "Trainer";
+
+    // Show loading while fetching user role
+    if (isLoadingRole) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin" />
+                <span className="ml-2">Loading...</span>
+            </div>
+        );
+    }
 
     if (error) {
         return <div className="text-center text-red-500 font-bold">{error}</div>;
     }
 
-    // If user is not an admin or trainer, show session has not started
+    // Only show "Session has not started" after we've confirmed the user role
     if (!isAdmin && !isTrainer) {
         return (
             <div className="flex flex-col items-center text-center text-red-500 font-bold text-xl">
                 <p>Session has not started.</p>
+                <p className="text-sm mt-2">Only Admins and Trainers can create sessions.</p>
             </div>
         );
     }
@@ -97,9 +122,13 @@ export default function CreateSessionPage() {
 
     if (!client || !user) {
         return (
-            <Loader2 className="mx-auto animate-spin" />
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin" />
+                <span className="ml-2">Loading client...</span>
+            </div>
         )
     }
+
     return (
         <div className="flex flex-col items-center space-y-6">
             <h1 className="text-center text-2xl font-bold">Welcome: {user?.fullName}</h1>
@@ -115,6 +144,7 @@ export default function CreateSessionPage() {
     )
 }
 
+// ... rest of the component functions remain the same ....
 interface DescriptionInputProps {
     value: string,
     onChange: (value: string) => void;

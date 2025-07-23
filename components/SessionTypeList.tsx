@@ -10,7 +10,7 @@ import { Textarea } from "./ui/textarea";
 import ReactDatePicker from "react-datepicker";
 import { useToast } from "./ui/use-toast";
 import { Input } from "./ui/input";
-import { getUserByRole } from "@/app/_actions/users.actions";
+import { getUserRoleByClerkId } from "@/app/_actions/users.actions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const initialValues = {
@@ -27,6 +27,8 @@ const SessionTypeList = () => {
   const [values, setValues] = useState(initialValues);
   const [callDetail, setCallDetail] = useState<Call>();
   const [userRole, setUserRole] = useState<string>("");
+  const [isLoadingRole, setIsLoadingRole] = useState(true);
+  const [roleError, setRoleError] = useState<string | null>(null);
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
@@ -34,12 +36,29 @@ const SessionTypeList = () => {
   useEffect(() => {
     const fetchUserRole = async () => {
       if (user?.id) {
-        const userData = await getUserByRole(user.id);
-        if (userData && userData.role) {
-          setUserRole(userData.role);
+        setIsLoadingRole(true);
+        console.log('Fetching role for Clerk ID:', user.id); // Debug log
+
+        try {
+          const result = await getUserRoleByClerkId(user.id);
+          console.log('Role result:', result); // Debug log
+
+          if (result.error) {
+            setRoleError(result.error);
+            console.error('Error fetching user role:', result.error);
+          } else {
+            setUserRole(result?.role || "");
+            console.log('Set user role to:', result?.role); // Debug log
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+          setRoleError('Failed to fetch user role');
+        } finally {
+          setIsLoadingRole(false);
         }
       }
     };
+
     fetchUserRole();
   }, [user]);
 
@@ -72,7 +91,19 @@ const SessionTypeList = () => {
     }
   };
 
-  if (!client || !user) return <Loader />;
+  // Show loading while fetching user role or client is not ready
+  if (!client || !user || isLoadingRole) return <Loader />;
+
+  // Show error if role fetching failed
+  if (roleError) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="text-center text-red-500">
+          <p>Error loading user permissions: {roleError}</p>
+        </div>
+      </div>
+    );
+  }
 
   const allowedActions = userRole === "Admin" || userRole === "Trainer";
 
@@ -83,7 +114,7 @@ const SessionTypeList = () => {
           <>
             <HomeCard
               img="/icons/add-session.svg"
-              title="New "
+              title="New Session"
               description="Start an instant Session"
               handleClick={() => setSessionState("isInstantSession")}
             />
