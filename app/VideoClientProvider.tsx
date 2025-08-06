@@ -7,17 +7,17 @@ import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { getToken } from "./_actions/video.client.actions";
 
-interface VideoClientProviderProps{
+interface VideoClientProviderProps {
     children: React.ReactNode;
 }
 
-export default function VideoClientProvider({children}: VideoClientProviderProps){
+export default function VideoClientProvider({ children }: VideoClientProviderProps) {
     const videoClient = useInitializeVideoClient();
 
-    if(!videoClient){
+    if (!videoClient) {
         return (
             <div className="h-screen flex items-center justify-center">
-                <Loader2 className="mx-auto animate-spin"/>
+                <Loader2 className="mx-auto animate-spin" />
             </div>
         )
     }
@@ -29,35 +29,42 @@ export default function VideoClientProvider({children}: VideoClientProviderProps
     )
 }
 
-function useInitializeVideoClient(){
-    const {user, isLoaded: userLoaded} = useUser();
+function useInitializeVideoClient() {
+    const { user, isLoaded: userLoaded } = useUser();
     const [videoClient, setVideoClient] = useState<StreamVideoClient | null>(null);
 
     useEffect(() => {
-        if(!userLoaded){
+        if (!userLoaded) {
             return;
         }
 
         let streamUser: User;
-        if(user?.id){
+        if (user?.id) {
             streamUser = {
                 id: user.id,
                 name: user.firstName || user.id,
                 image: user.imageUrl
             }
         }
-        else{
-            const id = nanoid()
+        else {
+            const id = nanoid();
+            // Get guest name from localStorage
+            let guestName = '';
+
+            if (typeof window !== 'undefined') {
+                guestName = localStorage.getItem('stream-guest-name') || '';
+            }
+
             streamUser = {
                 id,
                 type: "guest",
-                name: `Guest ${id}`
+                name: guestName.trim() || `Guest ${id.slice(0, 6)}`
             }
         }
 
         const apiKey = process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY
 
-        if(!apiKey){
+        if (!apiKey) {
             throw new Error("Api Key Is Undefined")
         }
 

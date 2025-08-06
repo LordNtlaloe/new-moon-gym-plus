@@ -1,6 +1,7 @@
 "use client"
 import { getMemberById } from '@/app/_actions/member.actions';
 import { saveWeightMeasurement, getWeightMeasurements, deleteWeightMeasurement } from '@/app/_actions/weight.actions';
+import { getMealsByDateRange } from '@/app/_actions/meals.actions';
 import MealCalendar from '@/components/general/Calendar';
 import { Member, User, UserRole } from '@/lib/types';
 import React, { useEffect, useState } from 'react'
@@ -10,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { MeasurementForm } from '@/components/dashboard/weights/weight-form';
 import { MeasurementHistory } from '@/components/dashboard/weights/weight-table';
 import { MemberSidebar } from '@/components/dashboard/memebers/member-sidebar';
+import { ConsistencyChart } from '@/components/dashboard/memebers/consistency-chart';
 
 type PageParams = {
     id: string
@@ -27,8 +29,35 @@ export default function MemberProfile({ params }: { params: PageParams }) {
     const [error, setError] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [weightHistory, setWeightHistory] = useState<any[]>([]);
+    const [mealData, setMealData] = useState<{ date: string; consistency: number }[]>([]);
     const [currentUserRole, setCurrentUserRole] = useState<UserRole>("member");
     const { toast } = useToast();
+
+    const calculateConsistencyData = (meals: any[]): { date: string; consistency: number }[] => {
+        // Group meals by week
+        const weeklyData: { [key: string]: { count: number, days: Set<string> } } = {};
+
+        meals.forEach(meal => {
+            const mealDate = new Date(meal.date);
+            const weekStart = new Date(mealDate);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // Start of week (Sunday)
+            const weekKey = weekStart.toISOString().split('T')[0];
+
+            if (!weeklyData[weekKey]) {
+                weeklyData[weekKey] = { count: 0, days: new Set() };
+            }
+            weeklyData[weekKey].count++;
+            weeklyData[weekKey].days.add(mealDate.toISOString().split('T')[0]);
+        });
+
+        // Convert to array and calculate consistency (0-1)
+        return Object.entries(weeklyData)
+            .map(([date, { days }]) => ({
+                date,
+                consistency: Math.min(days.size / 7, 1) // Cap at 1 (100%)
+            }))
+            .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -42,6 +71,16 @@ export default function MemberProfile({ params }: { params: PageParams }) {
                 // Fetch weight measurements
                 const measurements = await getWeightMeasurements(member_id);
                 setWeightHistory(measurements);
+
+                // Fetch meal data for consistency chart
+                if (result && !('error' in result)) {
+                    const endDate = new Date();
+                    const startDate = new Date();
+                    startDate.setMonth(endDate.getMonth() - 3); // Get last 3 months of data
+                    const meals = await getMealsByDateRange(result.user?._id || '', startDate, endDate);
+                    const consistencyData = calculateConsistencyData(meals);
+                    setMealData(consistencyData);
+                }
 
                 // Set current user role (you'll need to implement this)
                 // For example: const role = await getCurrentUserRole();
@@ -138,14 +177,21 @@ export default function MemberProfile({ params }: { params: PageParams }) {
                                 <CardTitle>Measurement History</CardTitle>
                             </CardHeader>
                             <CardContent>
-
                                 <MeasurementHistory
                                     measurements={weightHistory}
                                     onDelete={handleDelete}
                                     onAddFirst={() => setIsDialogOpen(true)}
-                                    currentUserRole={currentUserRole}  // Changed from canAddMeasurements
+                                    currentUserRole={currentUserRole}
                                 />
+                            </CardContent>
+                        </Card>
 
+                        <Card className="shadow-lg dark:bg-[#1D1D1D] rounded-md">
+                            <CardHeader>
+                                <CardTitle>Meal Consistency</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <ConsistencyChart data={mealData} />
                             </CardContent>
                         </Card>
 
@@ -185,7 +231,7 @@ export default function MemberProfile({ params }: { params: PageParams }) {
                     <MealCalendar
                         userId={data.user._id}
                         clerkId={data.user.clerkId}
-                        memberId={data.member?._id} 
+                        memberId={data.member?._id}
                         currentUserRole={data.user.role as UserRole}
                     />
                 )}

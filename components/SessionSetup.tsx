@@ -14,12 +14,16 @@ import { Button } from './ui/button';
 
 const SessionSetup = ({
   setIsSetupComplete,
+  initialGuestName = '',
+  onGuestNameChange,
 }: {
   setIsSetupComplete: (value: boolean) => void;
+  initialGuestName?: string;
+  onGuestNameChange?: (name: string) => void;
 }) => {
   const { isSignedIn, user } = useUser();
-  const [guestName, setGuestName] = useState('');
-  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [guestName, setGuestName] = useState(initialGuestName);
+  const [showGuestForm, setShowGuestForm] = useState(!!initialGuestName);
   const router = useRouter();
 
   const { useCallEndedAt, useCallStartsAt } = useCallStateHooks();
@@ -35,6 +39,28 @@ const SessionSetup = ({
   }
 
   const [isMicCamToggled, setIsMicCamToggled] = useState(false);
+
+  // Handle guest name changes
+  const handleGuestNameChange = (name: string) => {
+    setGuestName(name);
+    if (onGuestNameChange) {
+      onGuestNameChange(name);
+    }
+  };
+
+  // Load existing guest name on mount (only if not provided via props)
+  useEffect(() => {
+    if (!initialGuestName && typeof window !== 'undefined') {
+      const savedGuestName = localStorage.getItem('stream-guest-name');
+      if (savedGuestName) {
+        setGuestName(savedGuestName);
+        setShowGuestForm(true);
+        if (onGuestNameChange) {
+          onGuestNameChange(savedGuestName);
+        }
+      }
+    }
+  }, [initialGuestName, onGuestNameChange]);
 
   useEffect(() => {
     if (isMicCamToggled) {
@@ -52,9 +78,12 @@ const SessionSetup = ({
       return;
     }
 
-    // Store guest name in localStorage if applicable
-    if (!isSignedIn && guestName) {
+    // Store guest name in localStorage and notify parent
+    if (!isSignedIn && guestName.trim()) {
       localStorage.setItem('stream-guest-name', guestName.trim());
+      if (onGuestNameChange) {
+        onGuestNameChange(guestName.trim());
+      }
     }
 
     call.join();
@@ -79,8 +108,8 @@ const SessionSetup = ({
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center gap-3 text-white">
       <h1 className="text-center text-2xl font-bold">Setup</h1>
-      
-      {!isSignedIn && (
+
+      {!isSignedIn && !showGuestForm && (
         <div className="w-full max-w-md px-4 text-center mb-4">
           <p className="mb-4">Sign in to display your name to other participants</p>
           <div className="flex gap-4 justify-center">
@@ -94,7 +123,7 @@ const SessionSetup = ({
                 Create Account
               </Button>
             </SignUpButton>
-            <Button 
+            <Button
               onClick={() => setShowGuestForm(true)}
               className="bg-gray-600 hover:bg-gray-700"
             >
@@ -107,7 +136,7 @@ const SessionSetup = ({
       {(isSignedIn || showGuestForm) && (
         <>
           <VideoPreview />
-          
+
           {!isSignedIn && (
             <div className="w-full max-w-md px-4">
               <label htmlFor="guest-name" className="block mb-2 font-medium">
@@ -117,14 +146,19 @@ const SessionSetup = ({
                 id="guest-name"
                 type="text"
                 value={guestName}
-                onChange={(e) => setGuestName(e.target.value)}
-                className="w-full p-2 rounded-md bg-gray-700 text-white"
+                onChange={(e) => handleGuestNameChange(e.target.value)}
+                className="w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:border-blue-500 focus:outline-none"
                 placeholder="Enter your name"
                 required
               />
               <p className="text-sm text-gray-400 mt-1">
-                Consider signing in so we can remember you next time!
+                This name will be visible to other participants
               </p>
+              {!guestName.trim() && (
+                <p className="text-sm text-yellow-400 mt-1">
+                  Please enter a name to continue
+                </p>
+              )}
             </div>
           )}
 
@@ -141,10 +175,16 @@ const SessionSetup = ({
           </div>
 
           <Button
-            className="rounded-md bg-green-500 px-4 py-2.5"
+            className="rounded-md bg-green-500 px-4 py-2.5 hover:bg-green-600 disabled:bg-gray-500 disabled:cursor-not-allowed"
             onClick={handleJoin}
+            disabled={!isSignedIn && !guestName.trim()}
           >
-            {isSignedIn ? `Join as ${user.firstName || user.username}` : 'Join as Guest'}
+            {isSignedIn
+              ? `Join as ${user.firstName || user.username}`
+              : guestName.trim()
+                ? `Join as ${guestName.trim()}`
+                : 'Enter name to join'
+            }
           </Button>
         </>
       )}

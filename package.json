@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "static": "next build && next export"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.3",
@@ -71,6 +72,6 @@
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.8.3"
   }
 }

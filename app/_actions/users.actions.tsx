@@ -113,25 +113,45 @@ export const getUserByClerkId = async (clerkId: string) => {
     if (!dbConnection) await init();
 
     try {
-        const collection = await database?.collection("users");
+        const usersCollection = await database?.collection("users");
+        const membersCollection = await database?.collection("members");
 
-        if (!database || !collection) {
-            console.log("Failed to connect to collection...");
+        if (!database || !usersCollection || !membersCollection) {
+            console.log("Failed to connect to collections...");
             return { error: "Failed to connect to database" };
         }
 
-        // Now querying by clerkId
-        let user = await collection.findOne({ clerkId: clerkId });
+        // First, find the user by clerkId
+        let user = await usersCollection.findOne({ clerkId: clerkId });
 
-        if (user) {
-            user = { ...user, _id: user._id.toString() }; // Ensure _id is returned as string
-            return user; // Return the user data
+        if (!user) {
+            console.log("User not found for clerkId:", clerkId);
+            return { error: "User not found" };
         }
 
-        return { error: "User not found" }; // Return an error message if no user is found
+        // Convert user _id to string
+        user = { ...user, _id: user._id.toString() };
+
+        // Then find the member record using the clerkId (since member.userId matches user.clerkId)
+        let member = await membersCollection.findOne({ userId: clerkId });
+
+        if (!member) {
+            console.log("Member not found for userId:", clerkId);
+            return { error: "Member information not found" };
+        }
+
+        // Convert member _id to string
+        member = { ...member, _id: member._id.toString() };
+
+        // Return both user and member data
+        return {
+            user,
+            member
+        };
+
     } catch (error: any) {
-        console.log("An error occurred...", error.message);
-        return { error: error.message }; // Return the error message
+        console.log("An error occurred in getUserByClerkId:", error.message);
+        return { error: error.message };
     }
 };
 

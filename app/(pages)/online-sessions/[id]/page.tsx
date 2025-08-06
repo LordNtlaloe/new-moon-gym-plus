@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { StreamCall, StreamTheme } from '@stream-io/video-react-sdk';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { Loader } from 'lucide-react';
 
 import { useGetCallById } from '@/hooks/useGetCallById';
@@ -16,30 +16,64 @@ const SessionPage = () => {
   const { isLoaded, user } = useUser();
   const { call, isCallLoading } = useGetCallById(id);
   const [isSetupComplete, setIsSetupComplete] = useState(false);
+  const [guestName, setGuestName] = useState('');
+  const searchParams = useSearchParams();
 
-  if (!isLoaded || isCallLoading) return <Loader />;
+  // Load guest name from localStorage or URL params on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Check localStorage first
+      const savedGuestName = localStorage.getItem('stream-guest-name');
+      if (savedGuestName) {
+        setGuestName(savedGuestName);
+        return;
+      }
 
-  if (!call) return (
-    <p className="text-center text-3xl font-bold text-white">
-      Call Not Found
-    </p>
+      // Check URL params as fallback
+      const urlGuestName = searchParams.get('guestName');
+      if (urlGuestName) {
+        setGuestName(urlGuestName);
+        localStorage.setItem('stream-guest-name', urlGuestName);
+      }
+    }
+  }, [searchParams]);
+
+  if (!isLoaded || isCallLoading) return (
+    <div className="h-screen w-full flex items-center justify-center">
+      <Loader className="animate-spin text-white" size={48} />
+    </div>
   );
 
-  // get more info about custom call type:  https://getstream.io/video/docs/react/guides/configuring-call-types/
+  if (!call) return (
+    <div className="h-screen w-full flex items-center justify-center">
+      <p className="text-center text-3xl font-bold text-white">
+        Call Not Found
+      </p>
+    </div>
+  );
+
+  // Check if user is allowed to join
   const notAllowed = call.type === 'invited' && (!user || !call.state.members.find((m) => m.user.id === user.id));
 
-  if (notAllowed) return <Alert title="You are not allowed to join this session" />;
+  if (notAllowed) return (
+    <div className="h-screen w-full flex items-center justify-center">
+      <Alert title="You are not allowed to join this session" />
+    </div>
+  );
 
   return (
     <main className="h-screen w-full">
       <StreamCall call={call}>
         <StreamTheme>
-
-        {!isSetupComplete ? (
-          <SessionSetup setIsSetupComplete={setIsSetupComplete} />
-        ) : (
-          <SessionRoom />
-        )}
+          {!isSetupComplete ? (
+            <SessionSetup
+              setIsSetupComplete={setIsSetupComplete}
+              initialGuestName={guestName}
+              onGuestNameChange={setGuestName}
+            />
+          ) : (
+            <SessionRoom />
+          )}
         </StreamTheme>
       </StreamCall>
     </main>

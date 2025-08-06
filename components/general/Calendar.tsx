@@ -1,3 +1,4 @@
+// components/meal-calendar.tsx
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -8,7 +9,6 @@ import { getMealsByDateRange, createMealEntry } from "@/app/_actions/meals.actio
 import { MealType } from "@/lib/types";
 import { useAuth } from "@clerk/nextjs";
 import { UserRole } from "@/lib/types";
-
 import {
   Dialog,
   DialogContent,
@@ -44,6 +44,7 @@ const MealCalendar: React.FC<{
   const [mealNotes, setMealNotes] = useState("");
   const [mealDays, setMealDays] = useState<MealDaySummary[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [chartData, setChartData] = useState<{ date: string; consistency: number }[]>([]);
 
   const calendarRef = useRef<FullCalendar>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,11 +70,74 @@ const MealCalendar: React.FC<{
         daysMap.set(meal.date, day);
       });
 
-      setMealDays(Array.from(daysMap.values()));
+      const daysArray = Array.from(daysMap.values());
+      setMealDays(daysArray);
+      calculateConsistencyData(daysArray);
     };
 
     fetchMeals();
   }, [displayUserId]);
+
+  const calculateConsistencyData = (days: MealDaySummary[]) => {
+    // Sort days by date
+    const sortedDays = [...days].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    // Group by week
+    const weeklyData: { date: string; consistency: number }[] = [];
+
+    let currentWeekStart: Date | null = null;
+    let currentWeekDays: MealDaySummary[] = [];
+
+    sortedDays.forEach(day => {
+      const dayDate = new Date(day.date);
+      dayDate.setHours(0, 0, 0, 0);
+
+      if (!currentWeekStart) {
+        currentWeekStart = new Date(dayDate);
+        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Start of week (Sunday)
+      }
+
+      const weekEnd = new Date(currentWeekStart);
+      weekEnd.setDate(weekEnd.getDate() + 6); // End of week (Saturday)
+
+      if (dayDate >= currentWeekStart && dayDate <= weekEnd) {
+        currentWeekDays.push(day);
+      } else {
+        // Calculate consistency for the completed week
+        const consistency = calculateWeekConsistency(currentWeekDays);
+        weeklyData.push({
+          date: currentWeekStart.toISOString().split('T')[0],
+          consistency
+        });
+
+        // Reset for new week
+        currentWeekStart = new Date(dayDate);
+        currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay());
+        currentWeekDays = [day];
+      }
+    });
+
+    // Add the last week if it exists
+    if (currentWeekDays.length > 0 && currentWeekStart) {
+      const consistency = calculateWeekConsistency(currentWeekDays);
+      weeklyData.push({
+        date: currentWeekStart,
+        consistency
+      });
+    }
+
+    setChartData(weeklyData);
+  };
+
+  const calculateWeekConsistency = (weekDays: MealDaySummary[]): number => {
+    // Count days with at least one meal
+    const consistentDays = weekDays.filter(day =>
+      day.breakfast || day.lunch || day.dinner
+    ).length;
+
+    // Return ratio (0-1) of consistent days to total days in week
+    return consistentDays / 7;
+  };
 
   const handleDateClick = (dateStr: string) => {
     if (!isMember || !isOwnProfile) return;
@@ -131,6 +195,7 @@ const MealCalendar: React.FC<{
       }
 
       setMealDays(updatedDays);
+      calculateConsistencyData(updatedDays);
       setIsDialogOpen(false);
     } catch (error) {
       console.error("Failed to submit meal entry", error);
