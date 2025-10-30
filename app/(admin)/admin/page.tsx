@@ -91,7 +91,7 @@ export default function AdminDashboardPage() {
       const result = await syncClerkUsersToMongoDB()
       toast({
         title: result.success ? 'Success' : 'Error',
-        description: result.success ? result.message : result.error,
+        description: result.success ? result.success : result.error,
         variant: result.success ? 'default' : 'destructive',
       })
     } catch (error) {
