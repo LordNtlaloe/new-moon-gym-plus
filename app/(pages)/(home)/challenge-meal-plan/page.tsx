@@ -12,7 +12,7 @@ export default function ChallengePage() {
                         </svg>
                     </div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                        7-Day Fitness Challenge
+                        21-Days Fat Burn Marathon
                     </h1>
                     <p className="text-gray-600">
                         Download your personalized meal plan to get started!

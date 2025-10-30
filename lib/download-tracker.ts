@@ -1,9 +1,10 @@
 import { connectToDB } from "@/app/_database/database";
 
 export interface MealPlanDownloadRecord {
-  ip: string;
+  name: string;
+  email: string;
+  phone: string;
   timestamp: Date;
-  userAgent: string | null;
   isUnique: boolean;
 }
 
@@ -14,7 +15,11 @@ export interface MealPlanDownloadStats {
 }
 
 class MealPlanDownloadTracker {
-  async trackDownload(ip: string, userAgent: string | null): Promise<void> {
+  async trackDownload(
+    name: string,
+    email: string,
+    phone: string
+  ): Promise<void> {
     const client = await connectToDB();
     if (!client) {
       console.error("Failed to connect to database for tracking");
@@ -22,30 +27,32 @@ class MealPlanDownloadTracker {
     }
 
     try {
-      // ✅ Always point to your real DB
       const db = client.db("newmoon_db");
       const collection = db.collection<MealPlanDownloadRecord>(
         "meal_plan_downloads"
       );
 
-      // ✅ Check if this IP has downloaded before
-      const existingDownload = await collection.findOne({ ip });
+      // Check if this email has downloaded before
+      const existingDownload = await collection.findOne({ email });
 
-      // ❗ If not unique, DO NOT SAVE
+      // If not unique, DO NOT SAVE
       if (existingDownload) {
-        console.log(`Meal plan already downloaded by IP: ${ip} (not unique)`);
+        console.log(
+          `Meal plan already downloaded by email: ${email} (not unique)`
+        );
         return;
       }
 
-      // ✅ Save only the first unique download
+      // Save only the first unique download
       await collection.insertOne({
-        ip,
+        name,
+        email,
+        phone,
         timestamp: new Date(),
-        userAgent,
         isUnique: true,
       });
 
-      console.log(`✅ Unique meal plan download recorded - IP: ${ip}`);
+      console.log(`✅ Unique meal plan download recorded - Email: ${email}`);
     } catch (error: any) {
       console.error("Error tracking meal plan download:", error.message);
     } finally {
@@ -65,15 +72,17 @@ class MealPlanDownloadTracker {
         "meal_plan_downloads"
       );
 
-      const [totalDownloads, uniqueIPs, recentDownloads] = await Promise.all([
-        collection.countDocuments(), // Count unique downloads
-        collection.distinct("ip"), // Distinct IP count
-        collection.find().sort({ timestamp: -1 }).limit(10).toArray(), // Recent unique
-      ]);
+      const [totalDownloads, uniqueEmails, recentDownloads] = await Promise.all(
+        [
+          collection.countDocuments(), // Total downloads
+          collection.distinct("email"), // Unique emails
+          collection.find().sort({ timestamp: -1 }).limit(10).toArray(), // Recent
+        ]
+      );
 
       return {
         totalDownloads,
-        uniqueDownloads: uniqueIPs.length,
+        uniqueDownloads: uniqueEmails.length,
         recentDownloads: recentDownloads as MealPlanDownloadRecord[],
       };
     } finally {

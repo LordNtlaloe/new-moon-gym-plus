@@ -5,19 +5,29 @@ import { mealPlanDownloadTracker } from "@/lib/download-tracker";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    // Get client IP address
-    const ip = getClientIP(request);
+    const { searchParams } = new URL(request.url);
 
-    // Track download in database (non-blocking - don't await so file serves faster)
+    // Get user info from query parameters
+    const name = searchParams.get("name");
+    const email = searchParams.get("email");
+    const phone = searchParams.get("phone");
+
+    if (!name || !email || !phone) {
+      return NextResponse.json(
+        { message: "Name, email, and phone are required" },
+        { status: 400 }
+      );
+    }
+
+    // Track download in database (non-blocking)
     mealPlanDownloadTracker
-      .trackDownload(ip, request.headers.get("user-agent"))
+      .trackDownload(name, email, phone)
       .catch((error) => console.error("Failed to track download:", error));
 
-    // Path to your PDF file - update with actual filename
-    const fileName = "21-days-fat-burning-marathon-Meal-plan.pdf"; // Change this to your actual file name
-    const filePath = path.join(process.cwd(), "public", fileName); // Organized in pdfs folder
+    // Path to your PDF file
+    const fileName = "21-days-fat-burning-marathon-Meal-plan.pdf"; // Update as needed
+    const filePath = path.join(process.cwd(), "public", fileName);
 
-    // Check if file exists
     if (!fs.existsSync(filePath)) {
       console.error(`File not found: ${filePath}`);
       return NextResponse.json(
@@ -45,7 +55,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
     response.headers.set("Access-Control-Allow-Headers", "Content-Type");
 
-    console.log(`Meal plan downloaded by IP: ${ip}`);
+    console.log(`Meal plan downloaded by: ${email}`);
 
     return response;
   } catch (error) {
@@ -67,25 +77,4 @@ export async function OPTIONS(request: NextRequest): Promise<NextResponse> {
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
-}
-
-// Helper function to get client IP address
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const realIP = request.headers.get("x-real-ip");
-  const cfConnectingIP = request.headers.get("cf-connecting-ip"); // Cloudflare
-
-  if (cfConnectingIP) {
-    return cfConnectingIP;
-  }
-
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-
-  if (realIP) {
-    return realIP;
-  }
-
-  return "unknown";
 }
