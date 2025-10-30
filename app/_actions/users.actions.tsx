@@ -60,27 +60,65 @@ export const saveNewUser = async (formData: FormData) => {
     return newUser
 
 }
-export const createNewUserFromClerk = async (user: any) => {
-
+export const createNewUserFromClerk = async (userData: any) => {
     if (!dbConnection) await init();
 
     try {
-        const collection = await database.collection("users");
+        const usersCollection = await database.collection("users");
+        const membersCollection = await database.collection("members");
 
-        if (!collection || !database) {
-            return { error: "Faled to connect to collection!!" };
+        if (!usersCollection || !database) {
+            return { error: "Failed to connect to collections!!" };
         }
 
+        // Prepare user document
+        const userDocument = {
+            clerkId: userData.clerkId,
+            email: userData.email,
+            username: userData.username,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            photo: userData.photo,
+            role: userData.role,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        };
 
-        const newUser = await collection.insertOne(user);
+        // Insert user into users collection
+        const newUser = await usersCollection.insertOne(userDocument);
 
-        return newUser
+        // Also create a member record if needed
+        let newMember = null;
+        if (membersCollection) {
+            const memberDocument = {
+                userId: userData.clerkId,
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                role: userData.role,
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            
+            newMember = await membersCollection.insertOne(memberDocument);
+        }
+
+        console.log("New user created in MongoDB:", {
+            userId: newUser.insertedId.toString(),
+            clerkId: userData.clerkId,
+            memberId: newMember?.insertedId?.toString()
+        });
+
+        return {
+            success: true,
+            user: { ...userDocument, _id: newUser.insertedId.toString() },
+            member: newMember ? { _id: newMember.insertedId.toString() } : null
+        };
 
     } catch (error: any) {
-        console.log("An error occured saving new user:", error.message);
-        return { "error": error.message }
+        console.log("An error occurred saving new user:", error.message);
+        return { error: error.message };
     }
-
 }
 
 export const getUserByEmail = async (email: string) => {
@@ -252,52 +290,58 @@ export const getAllUsers = async () => {
     }
 
 }
-const deleteUserFromMongoDB = async (clerkId: string) => {
+
+
+export const updateUserRoleInMongoDB = async (clerkId: string, newRole: string) => {
     if (!dbConnection) await init();
 
     try {
+        const usersCollection = await database?.collection("users");
+        const membersCollection = await database?.collection("members");
 
-        const collection = await database?.collection("users");
-
-        if (!database || !collection) {
-            console.log("Failed to connect to collection..");
-            return;
+        if (!database || !usersCollection) {
+            console.log("Failed to connect to collections..");
+            return { error: "Failed to connect to database" };
         }
 
-        const result = await collection.deleteOne({ clerkId: clerkId })
-        console.log("User deleted from MongoDB");
+        // Update user role in users collection
+        const userResult = await usersCollection.updateOne(
+            { clerkId: clerkId }, 
+            { $set: { 
+                role: newRole,
+                updatedAt: new Date()
+            }}
+        );
 
-
-        return result;
-    } catch (error: any) {
-        console.log("An error occured getting all users...", error.message);
-        return { "error": error.message };
-    }
-
-}
-
-const updateUserRoleInMongoDB = async (clerkId: string, newRole: string) => {
-    if (!dbConnection) await init();
-
-    try {
-
-        const collection = await database?.collection("users");
-
-        if (!database || !collection) {
-            console.log("Failed to connect to collection..");
-            return;
+        // Also update role in members collection if exists
+        let memberResult = null;
+        if (membersCollection) {
+            memberResult = await membersCollection.updateOne(
+                { userId: clerkId },
+                { $set: { 
+                    role: newRole,
+                    updatedAt: new Date()
+                }}
+            );
         }
 
-        const result = await collection.updateOne({ clerkId: clerkId }, { $set: { role: newRole } })
-        console.log("User role updated");
+        console.log("User role updated in MongoDB:", {
+            usersModified: userResult.modifiedCount,
+            membersModified: memberResult?.modifiedCount || 0,
+            newRole: newRole
+        });
 
+        return {
+            success: true,
+            usersModified: userResult.modifiedCount,
+            membersModified: memberResult?.modifiedCount || 0,
+            newRole: newRole
+        };
 
-        return result;
     } catch (error: any) {
-        console.log("An error occured updating user role...", error.message);
-        return { "error": error.message };
+        console.log("An error occurred updating user role in MongoDB:", error.message);
+        return { error: error.message };
     }
-
 }
 
 export async function setUserRole(userId: string, newRole: string) {
@@ -478,3 +522,106 @@ export const getUserRoleByClerkId = async (clerkId: string) => {
         return { error: error.message };
     }
 };
+
+export const deleteUserFromMongoDB = async (clerkId: string) => {
+    if (!dbConnection) await init();
+
+    try {
+        const usersCollection = await database?.collection("users");
+        const membersCollection = await database?.collection("members");
+
+        if (!database || !usersCollection) {
+            console.log("Failed to connect to collections..");
+            return { error: "Failed to connect to database" };
+        }
+
+        // Delete user from users collection
+        const userResult = await usersCollection.deleteOne({ clerkId: clerkId });
+        
+        // Also delete associated member record if exists
+        let memberResult = null;
+        if (membersCollection) {
+            memberResult = await membersCollection.deleteOne({ userId: clerkId });
+        }
+
+        console.log("User deleted from MongoDB:", {
+            usersDeleted: userResult.deletedCount,
+            membersDeleted: memberResult?.deletedCount || 0
+        });
+
+        return {
+            success: true,
+            usersDeleted: userResult.deletedCount,
+            membersDeleted: memberResult?.deletedCount || 0
+        };
+
+    } catch (error: any) {
+        console.log("An error occurred deleting user from MongoDB:", error.message);
+        return { error: error.message };
+    }
+}
+
+
+export const updateUserInMongoDB = async (userData: any) => {
+    if (!dbConnection) await init();
+
+    try {
+        const usersCollection = await database?.collection("users");
+        const membersCollection = await database?.collection("members");
+
+        if (!database || !usersCollection) {
+            console.log("Failed to connect to collections..");
+            return { error: "Failed to connect to database" };
+        }
+
+        const updateData = {
+            email: userData.email,
+            username: userData.username,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            photo: userData.photo,
+            role: userData.role,
+            updatedAt: new Date()
+        };
+
+        // Update user in users collection
+        const userResult = await usersCollection.updateOne(
+            { clerkId: userData.clerkId }, 
+            { $set: updateData }
+        );
+
+        // Also update member record if exists
+        let memberResult = null;
+        if (membersCollection) {
+            const memberUpdateData = {
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                role: userData.role,
+                updatedAt: new Date()
+            };
+            
+            memberResult = await membersCollection.updateOne(
+                { userId: userData.clerkId },
+                { $set: memberUpdateData }
+            );
+        }
+
+        console.log("User updated in MongoDB:", {
+            usersModified: userResult.modifiedCount,
+            membersModified: memberResult?.modifiedCount || 0,
+            clerkId: userData.clerkId
+        });
+
+        return {
+            success: true,
+            usersModified: userResult.modifiedCount,
+            membersModified: memberResult?.modifiedCount || 0,
+            clerkId: userData.clerkId
+        };
+
+    } catch (error: any) {
+        console.log("An error occurred updating user in MongoDB:", error.message);
+        return { error: error.message };
+    }
+}
