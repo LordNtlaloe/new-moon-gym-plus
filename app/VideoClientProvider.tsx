@@ -34,54 +34,55 @@ function useInitializeVideoClient() {
     const [videoClient, setVideoClient] = useState<StreamVideoClient | null>(null);
 
     useEffect(() => {
-        if (!userLoaded) {
-            return;
-        }
+        if (!userLoaded) return;
 
-        let streamUser: User;
+        const apiKey = process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY;
+        if (!apiKey) throw new Error("Stream API key is undefined");
+
+        let client: StreamVideoClient;
+
         if (user?.id) {
-            streamUser = {
+            // Authenticated user — typed separately so TS resolves the correct overload
+            const streamUser: User = {
                 id: user.id,
                 name: user.firstName || user.id,
-                image: user.imageUrl
-            }
-        }
-        else {
+                image: user.imageUrl,
+            };
+
+            client = new StreamVideoClient({
+                apiKey,
+                user: streamUser,
+                tokenProvider: getToken,
+            });
+        } else {
+            // Guest user — typed separately
+            const guestName =
+                typeof window !== "undefined"
+                    ? localStorage.getItem("stream-guest-name") || ""
+                    : "";
+
             const id = nanoid();
-            // Get guest name from localStorage
-            let guestName = '';
 
-            if (typeof window !== 'undefined') {
-                guestName = localStorage.getItem('stream-guest-name') || '';
-            }
-
-            streamUser = {
+            const streamUser: User = {
                 id,
                 type: "guest",
-                name: guestName.trim() || `Guest ${id.slice(0, 6)}`
-            }
+                name: guestName.trim() || `Guest ${id.slice(0, 6)}`,
+            };
+
+            client = new StreamVideoClient({
+                apiKey,
+                user: streamUser,
+            });
         }
-
-        const apiKey = process.env.NEXT_PUBLIC_STREAM_VIDEO_API_KEY
-
-        if (!apiKey) {
-            throw new Error("Api Key Is Undefined")
-        }
-
-        const client = new StreamVideoClient({
-            apiKey,
-            user: streamUser,
-            tokenProvider: user?.id ? getToken : undefined
-        });
 
         setVideoClient(client);
 
         return () => {
             client.disconnectUser();
-            setVideoClient(null)
-        }
+            setVideoClient(null);
+        };
 
-    }, [user?.id, user?.firstName, user?.imageUrl, userLoaded])
+    }, [user?.id, user?.firstName, user?.imageUrl, userLoaded]);
 
     return videoClient;
 }
